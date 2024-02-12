@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=3 uid="uid://bdlfqubmf23lf"]
+
+[ext_resource type="Script" path="res://session/hub/hub.gd" id="1_bpdoh"]
+[ext_resource type="PackedScene" uid="uid://d1g7lnunorf3u" path="res://start_menu/start_menu.tscn" id="2_ne8gg"]
+
+[node name="hub" type="Node"]
+script = ExtResource("1_bpdoh")
+
+[node name="start_menu" parent="." instance=ExtResource("2_ne8gg")]
+
+[editable path="start_menu"]

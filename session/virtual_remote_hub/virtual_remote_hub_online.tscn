@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://byxajrpbv7md2"]
+
+[ext_resource type="Script" path="res://session/virtual_remote_hub/virtual_remote_hub_online.gd" id="1_cgwp3"]
+
+[node name="virtual_remote_hub" type="Node"]
+script = ExtResource("1_cgwp3")

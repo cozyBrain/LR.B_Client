@@ -1,0 +1,356 @@
+[gd_scene load_steps=19 format=3 uid="uid://d1g7lnunorf3u"]
+
+[ext_resource type="Script" path="res://start_menu/start_menu.gd" id="1_6ghdf"]
+[ext_resource type="Texture2D" uid="uid://7fnjyortnx3e" path="res://start_menu/Icons/setting_icon.png" id="2_ohvd1"]
+[ext_resource type="Script" path="res://start_menu/OfflineMenu.gd" id="3_mefo3"]
+
+[sub_resource type="Animation" id="Animation_12fa7"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("CanvasLayer/Control/Transition/ColorRect:self_modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("CanvasLayer/Control/Transition/ColorRect:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+
+[sub_resource type="Animation" id="Animation_yj3cm"]
+resource_name = "fade_in"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("CanvasLayer/Control/Transition/ColorRect:self_modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("CanvasLayer/Control/Transition/ColorRect:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.5),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+
+[sub_resource type="Animation" id="Animation_pjty4"]
+resource_name = "fade_out"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("CanvasLayer/Control/Transition/ColorRect:self_modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.2),
+"transitions": PackedFloat32Array(1, 0.546416),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("CanvasLayer/Control/Transition/ColorRect:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_o3xma"]
+_data = {
+"RESET": SubResource("Animation_12fa7"),
+"fade_in": SubResource("Animation_yj3cm"),
+"fade_out": SubResource("Animation_pjty4")
+}
+
+[sub_resource type="Theme" id="Theme_75kki"]
+default_font_size = 100
+
+[sub_resource type="Theme" id="Theme_yuj3y"]
+default_font_size = 100
+
+[sub_resource type="FontVariation" id="FontVariation_dnx1r"]
+
+[sub_resource type="Theme" id="Theme_0s6td"]
+default_font = SubResource("FontVariation_dnx1r")
+default_font_size = 71
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gxsvm"]
+bg_color = Color(0.133333, 0.133333, 0.133333, 1)
+border_width_right = 28
+border_width_bottom = 23
+border_color = Color(0.113725, 0.113725, 0.113725, 1)
+border_blend = true
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_u4s5g"]
+bg_color = Color(0.0941176, 0.0941176, 0.0941176, 1)
+border_color = Color(0.152941, 0.152941, 0.152941, 0)
+
+[sub_resource type="Theme" id="Theme_d5q41"]
+default_font_size = 110
+Button/styles/normal = SubResource("StyleBoxFlat_gxsvm")
+Button/styles/pressed = SubResource("StyleBoxFlat_u4s5g")
+
+[sub_resource type="Theme" id="Theme_cc8h8"]
+default_font_size = 74
+
+[sub_resource type="Theme" id="Theme_12dii"]
+default_font_size = 30
+
+[sub_resource type="Theme" id="Theme_w16xt"]
+default_font_size = 30
+
+[sub_resource type="Theme" id="Theme_se7ls"]
+default_font_size = 31
+
+[node name="start_menu" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("1_6ghdf")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="Control" type="Control" parent="CanvasLayer"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Transition" type="AnimationPlayer" parent="CanvasLayer/Control"]
+unique_name_in_owner = true
+root_node = NodePath("../../..")
+libraries = {
+"": SubResource("AnimationLibrary_o3xma")
+}
+speed_scale = 2.0
+
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer/Control/Transition"]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.0823529, 0.0823529, 0.0823529, 1)
+
+[node name="MainMenu" type="Control" parent="CanvasLayer/Control"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_vertical = 4
+
+[node name="PanelContainer" type="PanelContainer" parent="CanvasLayer/Control/MainMenu"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/Control/MainMenu/PanelContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 300
+theme_override_constants/margin_top = 256
+theme_override_constants/margin_right = 300
+theme_override_constants/margin_bottom = 240
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/Control/MainMenu/PanelContainer/MarginContainer"]
+layout_mode = 2
+
+[node name="ID_margin_container" type="MarginContainer" parent="CanvasLayer/Control/MainMenu/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_bottom = 12
+
+[node name="ID_InputLine" type="HBoxContainer" parent="CanvasLayer/Control/MainMenu/PanelContainer/MarginContainer/VBoxContainer/ID_margin_container"]
+layout_mode = 2
+theme_override_constants/separation = 72
+
+[node name="ID_Input" type="LineEdit" parent="CanvasLayer/Control/MainMenu/PanelContainer/MarginContainer/VBoxContainer/ID_margin_container/ID_InputLine"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme = SubResource("Theme_75kki")
+placeholder_text = "ID"
+expand_to_text_length = true
+caret_blink = true
+caret_blink_interval = 0.25
+
+[node name="PW_InputLine" type="HBoxContainer" parent="CanvasLayer/Control/MainMenu/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 9
+
+[node name="PW_Input" type="LineEdit" parent="CanvasLayer/Control/MainMenu/PanelContainer/MarginContainer/VBoxContainer/PW_InputLine"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme = SubResource("Theme_yuj3y")
+placeholder_text = "Password"
+expand_to_text_length = true
+caret_blink = true
+caret_blink_interval = 0.25
+secret = true
+
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/Control/MainMenu/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 10
+theme_override_constants/margin_top = 12
+
+[node name="Login&Register" type="VBoxContainer" parent="CanvasLayer/Control/MainMenu/PanelContainer/MarginContainer/VBoxContainer/MarginContainer"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/Control/MainMenu/PanelContainer/MarginContainer/VBoxContainer/MarginContainer/Login&Register"]
+layout_mode = 2
+theme_override_constants/separation = 23
+alignment = 1
+
+[node name="RegisterButton" type="Button" parent="CanvasLayer/Control/MainMenu/PanelContainer/MarginContainer/VBoxContainer/MarginContainer/Login&Register/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme = SubResource("Theme_0s6td")
+text = "Register"
+flat = true
+
+[node name="LoginButton" type="Button" parent="CanvasLayer/Control/MainMenu/PanelContainer/MarginContainer/VBoxContainer/MarginContainer/Login&Register/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme = SubResource("Theme_d5q41")
+text = "Login"
+
+[node name="OfflineButton" type="Button" parent="CanvasLayer/Control/MainMenu/PanelContainer/MarginContainer/VBoxContainer/MarginContainer/Login&Register"]
+unique_name_in_owner = true
+layout_mode = 2
+theme = SubResource("Theme_cc8h8")
+text = "Offline"
+
+[node name="setting_button" type="Button" parent="CanvasLayer/Control/MainMenu"]
+layout_mode = 2
+offset_right = 264.0
+offset_bottom = 264.0
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_colors/icon_hover_color = Color(0.180392, 0.180392, 0.180392, 1)
+icon = ExtResource("2_ohvd1")
+flat = true
+
+[node name="OfflineMenu" type="Control" parent="CanvasLayer/Control"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("3_mefo3")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/Control/OfflineMenu"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PanelContainer" type="PanelContainer" parent="CanvasLayer/Control/OfflineMenu/HBoxContainer"]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/Control/OfflineMenu/HBoxContainer/PanelContainer"]
+layout_mode = 2
+
+[node name="MainMenu" type="Button" parent="CanvasLayer/Control/OfflineMenu/HBoxContainer/PanelContainer/VBoxContainer"]
+layout_mode = 2
+theme = SubResource("Theme_12dii")
+text = "Main Menu"
+
+[node name="NewSpace" type="Button" parent="CanvasLayer/Control/OfflineMenu/HBoxContainer/PanelContainer/VBoxContainer"]
+layout_mode = 2
+theme = SubResource("Theme_w16xt")
+text = "New Space"
+
+[node name="TabContainer" type="TabContainer" parent="CanvasLayer/Control/OfflineMenu/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme = SubResource("Theme_se7ls")
+clip_tabs = false
+
+[node name="local" type="ScrollContainer" parent="CanvasLayer/Control/OfflineMenu/HBoxContainer/TabContainer"]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/Control/OfflineMenu/HBoxContainer/TabContainer/local"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Tab2" type="ScrollContainer" parent="CanvasLayer/Control/OfflineMenu/HBoxContainer/TabContainer"]
+visible = false
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/Control/OfflineMenu/HBoxContainer/TabContainer/Tab2"]
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="Label" type="Label" parent="CanvasLayer/Control/OfflineMenu/HBoxContainer/TabContainer/Tab2/VBoxContainer"]
+layout_mode = 2
+text = "ABC"
+
+[node name="Label2" type="Label" parent="CanvasLayer/Control/OfflineMenu/HBoxContainer/TabContainer/Tab2/VBoxContainer"]
+layout_mode = 2
+text = "DEF"
+
+[node name="Label3" type="Label" parent="CanvasLayer/Control/OfflineMenu/HBoxContainer/TabContainer/Tab2/VBoxContainer"]
+layout_mode = 2
+text = "GHI"
+
+[node name="Label4" type="Label" parent="CanvasLayer/Control/OfflineMenu/HBoxContainer/TabContainer/Tab2/VBoxContainer"]
+layout_mode = 2
+text = "JKL"
+
+[node name="Label5" type="Label" parent="CanvasLayer/Control/OfflineMenu/HBoxContainer/TabContainer/Tab2/VBoxContainer"]
+layout_mode = 2
+text = "MNO"
+
+[connection signal="animation_finished" from="CanvasLayer/Control/Transition" to="." method="_on_transition_animation_finished"]
+[connection signal="pressed" from="CanvasLayer/Control/MainMenu/PanelContainer/MarginContainer/VBoxContainer/MarginContainer/Login&Register/OfflineButton" to="." method="_on_offline_button_pressed"]
+[connection signal="pressed" from="CanvasLayer/Control/OfflineMenu/HBoxContainer/PanelContainer/VBoxContainer/MainMenu" to="." method="_on_main_menu_button_pressed"]
+[connection signal="pressed" from="CanvasLayer/Control/OfflineMenu/HBoxContainer/PanelContainer/VBoxContainer/NewSpace" to="CanvasLayer/Control/OfflineMenu" method="_on_new_space_button_pressed"]

@@ -1,0 +1,14 @@
+[gd_scene load_steps=3 format=3 uid="uid://dk8ce7bwqnsi1"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_7k1hr"]
+transparency = 1
+albedo_color = Color(0.560784, 0.611765, 0.231373, 0.580392)
+emission_enabled = true
+emission = Color(0.427451, 0.439216, 0, 1)
+emission_energy_multiplier = 0.68
+
+[sub_resource type="BoxMesh" id="BoxMesh_48rkn"]
+material = SubResource("StandardMaterial3D_7k1hr")
+
+[node name="voxel_pointer" type="MeshInstance3D"]
+mesh = SubResource("BoxMesh_48rkn")

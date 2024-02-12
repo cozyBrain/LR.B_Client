@@ -1,0 +1,28 @@
+[gd_scene load_steps=2 format=3 uid="uid://4h6w62g4sg4u"]
+
+[ext_resource type="Script" path="res://start_menu/offline_menu/local_space_metadata_panel.gd" id="1_gt201"]
+
+[node name="PanelContainer" type="PanelContainer"]
+offset_right = 203.0
+offset_bottom = 31.0
+script = ExtResource("1_gt201")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="description" type="Label" parent="HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 1
+text = "untitled"
+
+[node name="MarginContainer" type="MarginContainer" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 10
+
+[node name="play_the_space" type="Button" parent="HBoxContainer/MarginContainer"]
+layout_mode = 2
+text = "     play     "
+
+[connection signal="pressed" from="HBoxContainer/MarginContainer/play_the_space" to="." method="_on_play_the_space_pressed"]

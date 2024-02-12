@@ -1,0 +1,69 @@
+[gd_scene load_steps=11 format=3 uid="uid://bmuafmq7w5vma"]
+
+[ext_resource type="Script" path="res://session/virtual_remote_hub/virtual_remote_hub_offline.gd" id="1_xqj05"]
+[ext_resource type="Script" path="res://session/virtual_remote_hub/space/space.gd" id="2_06oiq"]
+[ext_resource type="Script" path="res://session/virtual_remote_hub/space/player/modules/player_motion_sync.gd" id="3_mduop"]
+[ext_resource type="Script" path="res://session/virtual_remote_hub/space/player/modules/chunk_projection.gd" id="4_nbdv7"]
+[ext_resource type="Script" path="res://session/virtual_remote_hub/space/player/modules/player.gd" id="5_mseiq"]
+[ext_resource type="Script" path="res://session/virtual_remote_hub/space/modules/chunk.gd" id="6_n2y42"]
+[ext_resource type="Script" path="res://session/virtual_remote_hub/space/player/modules/chunk_observer.gd" id="6_t4n1l"]
+[ext_resource type="Script" path="res://session/virtual_remote_hub/space/player/modules/node_creator.gd" id="6_xloqq"]
+[ext_resource type="Script" path="res://session/virtual_remote_hub/space/player/modules/unified_chunk_observer.gd" id="7_pxavi"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_8c2hq"]
+
+[node name="virtual_remote_hub" type="Node"]
+script = ExtResource("1_xqj05")
+
+[node name="space" type="Node3D" parent="."]
+unique_name_in_owner = true
+script = ExtResource("2_06oiq")
+
+[node name="offline_player" type="CharacterBody3D" parent="space"]
+unique_name_in_owner = true
+transform = Transform3D(1.31134e-07, 0, -1, 0, 1, 0, 1, 0, 1.31134e-07, 0, 0, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="space/offline_player"]
+shape = SubResource("SphereShape3D_8c2hq")
+disabled = true
+
+[node name="head" type="Node3D" parent="space/offline_player"]
+
+[node name="CSGBox3D" type="CSGBox3D" parent="space/offline_player/head"]
+size = Vector3(0.25, 0.25, 0.6)
+
+[node name="player_modules" type="Node" parent="space/offline_player"]
+unique_name_in_owner = true
+
+[node name="player" type="Node" parent="space/offline_player/player_modules"]
+script = ExtResource("5_mseiq")
+
+[node name="player_motion_sync" type="Node" parent="space/offline_player/player_modules"]
+script = ExtResource("3_mduop")
+
+[node name="chunk_projection" type="Node" parent="space/offline_player/player_modules"]
+script = ExtResource("4_nbdv7")
+
+[node name="chunk_observer" type="Node" parent="space/offline_player/player_modules"]
+script = ExtResource("6_t4n1l")
+
+[node name="unified_chunk_observer" type="Node" parent="space/offline_player/player_modules"]
+script = ExtResource("7_pxavi")
+
+[node name="node_creator" type="Node" parent="space/offline_player/player_modules"]
+script = ExtResource("6_xloqq")
+
+[node name="space_modules" type="Node" parent="space"]
+unique_name_in_owner = true
+
+[node name="chunk" type="Node" parent="space/space_modules"]
+script = ExtResource("6_n2y42")
+
+[node name="observation_queue_handle_tick" type="Timer" parent="space/space_modules/chunk"]
+wait_time = 0.1
+
+[node name="unload_queue_handle_tick" type="Timer" parent="space/space_modules/chunk"]
+
+[node name="broadcast_chunk_update_tick" type="Timer" parent="space/space_modules/chunk"]
+
+[node name="intobject_pre_allocation_tick" type="Timer" parent="space/space_modules/chunk"]

@@ -1,0 +1,216 @@
+[gd_scene load_steps=18 format=3 uid="uid://cmkkec0mugg7y"]
+
+[ext_resource type="Script" path="res://session/hub/space/player/player.gd" id="1_b5vu3"]
+[ext_resource type="Environment" uid="uid://cvugm5xmaatil" path="res://session/hub/space/space_projection_world_environment.tres" id="2_234cb"]
+[ext_resource type="Script" path="res://session/hub/space/player/3d_hud/3d_hud_projector.gd" id="3_dmfoi"]
+[ext_resource type="PackedScene" uid="uid://blogxlkgokqjm" path="res://session/hub/space/player/3d_hud/hud_console/console.tscn" id="4_f756s"]
+[ext_resource type="Script" path="res://session/hub/space/player/2d_hud/quick_menu/quick_menu.gd" id="5_45j60"]
+[ext_resource type="Script" path="res://session/hub/space/player/modules/pointer/pointer.gd" id="6_4tbiy"]
+[ext_resource type="Script" path="res://session/hub/space/player/modules/console/console.gd" id="7_2lkmj"]
+[ext_resource type="Script" path="res://session/hub/space/player/modules/player_motion_sync/player_motion_sync.gd" id="8_doyc6"]
+[ext_resource type="Script" path="res://session/hub/space/player/modules/chunk_observer/chunk_observer.gd" id="9_bc0rt"]
+[ext_resource type="Script" path="res://session/hub/space/player/modules/_design_tools/node_creator/node_creator.gd" id="9_kq4ux"]
+[ext_resource type="Script" path="res://session/hub/space/player/modules/unified_chunk_observer/unified_chunk_observer.gd" id="10_ip36i"]
+[ext_resource type="Script" path="res://session/hub/space/modules/chunk_projection/chunk_projection.gd" id="10_mdjmk"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ocn5h"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_0d6j2"]
+vertex_color_use_as_albedo = true
+albedo_color = Color(0.12549, 1, 0.188235, 1)
+emission_enabled = true
+emission = Color(0, 0.533333, 0, 1)
+ao_light_affect = 1.0
+backlight = Color(0.937255, 0.937255, 0.937255, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_15lec"]
+material = SubResource("StandardMaterial3D_0d6j2")
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_8c2hq"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_1ksfe"]
+size = Vector3(0.5, 1, 0.5)
+
+[node name="space_projection" type="Node3D"]
+
+[node name="TEST_GREEN_BOX" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="TEST_GREEN_BOX"]
+transform = Transform3D(0.8, 0, 0, 0, 0.8, 0, 0, 0, 0.8, 0, 0, 0)
+shape = SubResource("BoxShape3D_ocn5h")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="TEST_GREEN_BOX/CollisionShape3D"]
+mesh = SubResource("BoxMesh_15lec")
+skeleton = NodePath("../..")
+
+[node name="player" type="CharacterBody3D" parent="."]
+unique_name_in_owner = true
+transform = Transform3D(1.31134e-07, 0, -1, 0, 1, 0, 1, 0, 1.31134e-07, 0, 0, 0)
+script = ExtResource("1_b5vu3")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="player"]
+shape = SubResource("SphereShape3D_8c2hq")
+disabled = true
+
+[node name="head" type="Node3D" parent="player"]
+
+[node name="camera" type="Camera3D" parent="player/head"]
+cull_mask = 1048573
+current = true
+fov = 116.0
+near = 0.02
+far = 978.69
+
+[node name="CSGBox3D" type="CSGBox3D" parent="player/head"]
+size = Vector3(0.25, 0.25, 0.6)
+
+[node name="laser_pointer" type="RayCast3D" parent="player/head"]
+target_position = Vector3(0, 0, -2)
+debug_shape_custom_color = Color(0.027451, 0.67451, 0.74902, 1)
+
+[node name="chunks_detector" type="Node3D" parent="player/head/laser_pointer"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0)
+
+[node name="Area3D" type="Area3D" parent="player/head/laser_pointer/chunks_detector"]
+collision_layer = 2
+collision_mask = 2
+monitorable = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="player/head/laser_pointer/chunks_detector/Area3D"]
+transform = Transform3D(1, 1.31134e-07, 5.73205e-15, 0, -4.37114e-08, 1, 1.31134e-07, -1, -4.37114e-08, 0, 0, -0.5)
+shape = SubResource("BoxShape3D_1ksfe")
+
+[node name="hud" type="CanvasLayer" parent="player/head"]
+
+[node name="viewport_container_for_3d_hud" type="SubViewportContainer" parent="player/head/hud"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+stretch = true
+
+[node name="SubViewport" type="SubViewport" parent="player/head/hud/viewport_container_for_3d_hud"]
+transparent_bg = true
+handle_input_locally = false
+size = Vector2i(1280, 720)
+render_target_update_mode = 4
+
+[node name="3d_hud_projector" type="Camera3D" parent="player/head/hud/viewport_container_for_3d_hud/SubViewport"]
+unique_name_in_owner = true
+transform = Transform3D(1.31134e-07, 0, -1, 0, 1, 0, 1, 0, 1.31134e-07, 0, 0, 0)
+cull_mask = 2
+fov = 116.0
+near = 0.001
+far = 978.69
+script = ExtResource("3_dmfoi")
+
+[node name="console" parent="player/head/hud/viewport_container_for_3d_hud/SubViewport/3d_hud_projector" instance=ExtResource("4_f756s")]
+transform = Transform3D(0.990464, 9.8953e-09, 0.137773, -0.00179618, 0.999915, 0.0129129, -0.137761, -0.0130372, 0.99038, -4.82408, -2.44498, -1.67022)
+
+[node name="2d_hud" type="Control" parent="player/head/hud"]
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+
+[node name="quick_menu" type="Control" parent="player/head/hud/2d_hud"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("5_45j60")
+
+[node name="main" type="Control" parent="player/head/hud/2d_hud/quick_menu"]
+visible = false
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="stage" type="Control" parent="player/head/hud/2d_hud/quick_menu"]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="sub_stage" type="Control" parent="player/head/hud/2d_hud/quick_menu"]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="sub" type="Control" parent="player/head/hud/2d_hud/quick_menu"]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="go_back_to_main" type="Button" parent="player/head/hud/2d_hud/quick_menu/sub"]
+visible = false
+layout_mode = 0
+offset_right = 85.0
+offset_bottom = 31.0
+theme_override_colors/font_color = Color(0, 0.678431, 0, 1)
+text = "main"
+
+[node name="player_modules" type="Node" parent="player"]
+unique_name_in_owner = true
+
+[node name="console" type="Node" parent="player/player_modules"]
+script = ExtResource("7_2lkmj")
+
+[node name="player_motion_sync" type="Node" parent="player/player_modules"]
+script = ExtResource("8_doyc6")
+
+[node name="pointer" type="Node" parent="player/player_modules"]
+script = ExtResource("6_4tbiy")
+
+[node name="node_creator" type="Node" parent="player/player_modules"]
+script = ExtResource("9_kq4ux")
+
+[node name="chunk_observer" type="Node" parent="player/player_modules"]
+script = ExtResource("9_bc0rt")
+
+[node name="unified_chunk_observer" type="Node" parent="player/player_modules"]
+script = ExtResource("10_ip36i")
+
+[node name="space_modules" type="Node3D" parent="."]
+unique_name_in_owner = true
+
+[node name="chunk_projection" type="Node3D" parent="space_modules"]
+script = ExtResource("10_mdjmk")
+
+[node name="intobject_pre_allocation_tick" type="Timer" parent="space_modules/chunk_projection"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = ExtResource("2_234cb")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="WorldEnvironment"]
+transform = Transform3D(0.675848, 0.327288, 0.660388, -0.737042, 0.300115, 0.605559, 3.19691e-09, -0.895999, 0.444057, 0.410547, 3.89552, 0)
+light_color = Color(0.12549, 0.12549, 0.12549, 1)
+light_energy = 0.1
+light_angular_distance = 57.77
+directional_shadow_mode = 1
+sky_mode = 1
+
+[node name="DirectionalLight3D2" type="DirectionalLight3D" parent="WorldEnvironment"]
+transform = Transform3D(0.172781, 0.729464, -0.661838, 0.83286, -0.466921, -0.297202, -0.525824, -0.499868, -0.688216, 4.30052, 3.89552, 0)
+light_color = Color(0.12549, 0.12549, 0.12549, 1)
+light_energy = 0.1
+light_angular_distance = 57.77
+directional_shadow_mode = 1
+sky_mode = 1
+
+[connection signal="head_moved" from="player" to="player/player_modules/pointer" method="_on_player_head_moved"]
+[connection signal="area_entered" from="player/head/laser_pointer/chunks_detector/Area3D" to="space_modules/chunk_projection" method="_on_chunks_detector_detected"]
+[connection signal="area_exited" from="player/head/laser_pointer/chunks_detector/Area3D" to="space_modules/chunk_projection" method="_on_chunks_detector_detected_exit"]
+[connection signal="typing_stopped" from="player/head/hud/viewport_container_for_3d_hud/SubViewport/3d_hud_projector/console" to="player" method="_on_console_typing_stopped"]
+[connection signal="pressed" from="player/head/hud/2d_hud/quick_menu/sub/go_back_to_main" to="player/head/hud/2d_hud/quick_menu" method="_on_go_back_to_main_pressed"]

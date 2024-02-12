@@ -1,0 +1,100 @@
+[gd_scene load_steps=6 format=3 uid="uid://dck31tp1ffxql"]
+
+[ext_resource type="Script" path="res://start_menu/offline_menu/new_space_config_menu.gd" id="1_4sl7e"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_boptp"]
+font_size = 27
+font_color = Color(0.87451, 0.87451, 0.87451, 1)
+outline_size = 3
+outline_color = Color(0.129412, 0.129412, 0.129412, 1)
+shadow_size = 5
+shadow_color = Color(0, 0, 0, 0.603922)
+
+[sub_resource type="LabelSettings" id="LabelSettings_powyn"]
+font_size = 24
+font_color = Color(0.752941, 0.752941, 0.752941, 1)
+
+[sub_resource type="Theme" id="Theme_7i8v1"]
+default_font_size = 24
+
+[sub_resource type="Theme" id="Theme_q8akh"]
+default_font_size = 24
+
+[node name="new_space_config_menu" type="Panel"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -213.5
+offset_top = -115.0
+offset_right = 213.5
+offset_bottom = 115.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+script = ExtResource("1_4sl7e")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_bottom = 8
+
+[node name="Title" type="Label" parent="MarginContainer/VBoxContainer/MarginContainer"]
+layout_mode = 2
+text = "New space configuration"
+label_settings = SubResource("LabelSettings_boptp")
+
+[node name="Name" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="label" type="Label" parent="MarginContainer/VBoxContainer/Name"]
+layout_mode = 2
+text = "Name: "
+label_settings = SubResource("LabelSettings_powyn")
+
+[node name="name_input" type="LineEdit" parent="MarginContainer/VBoxContainer/Name"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "underscore('_') instead of space"
+
+[node name="MarginContainer2" type="MarginContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 10
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 5
+
+[node name="Buttons" type="HBoxContainer" parent="MarginContainer/VBoxContainer/MarginContainer2"]
+layout_mode = 2
+size_flags_vertical = 10
+alignment = 2
+
+[node name="cancel" type="Button" parent="MarginContainer/VBoxContainer/MarginContainer2/Buttons"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme = SubResource("Theme_7i8v1")
+text = "Cancel"
+
+[node name="create" type="Button" parent="MarginContainer/VBoxContainer/MarginContainer2/Buttons"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme = SubResource("Theme_q8akh")
+text = "Create"
+
+[connection signal="gui_input" from="." to="." method="_on_gui_input"]

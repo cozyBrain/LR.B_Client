@@ -1,0 +1,80 @@
+[gd_scene load_steps=7 format=3 uid="uid://blogxlkgokqjm"]
+
+[ext_resource type="Script" path="res://session/hub/space/player/3d_hud/hud_console/console_window.gd" id="1_u10un"]
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_1s8t5"]
+viewport_path = NodePath("panel/SubViewportContainer/SubViewport")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_sabdc"]
+resource_local_to_scene = true
+transparency = 1
+shading_mode = 0
+albedo_color = Color(1, 1, 1, 0.784314)
+albedo_texture = SubResource("ViewportTexture_1s8t5")
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_o733l"]
+size = Vector2(2.5, 2.5)
+
+[sub_resource type="Theme" id="Theme_2kae5"]
+default_font_size = 27
+
+[sub_resource type="Theme" id="Theme_knruy"]
+default_font_size = 30
+
+[node name="console" type="Node3D"]
+transform = Transform3D(0.990464, 9.8953e-09, 0.137773, -0.00179618, 0.999915, 0.0129129, -0.137761, -0.0130372, 0.99038, -4.35309, -2.44498, -1.67022)
+script = ExtResource("1_u10un")
+
+[node name="panel" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.999752, -0.0222304, -0.000909445, -0.000810639, 0.00445324, -0.99999, 0.0222342, 0.999743, 0.00443411, 1.37968, 1.11619, 0.0162771)
+layers = 2
+material_override = SubResource("StandardMaterial3D_sabdc")
+mesh = SubResource("PlaneMesh_o733l")
+skeleton = NodePath("../../..")
+
+[node name="SubViewportContainer" type="SubViewportContainer" parent="panel"]
+light_mask = 0
+visibility_layer = 0
+offset_right = 40.0
+offset_bottom = 40.0
+mouse_filter = 2
+
+[node name="SubViewport" type="SubViewport" parent="panel/SubViewportContainer"]
+disable_3d = true
+handle_input_locally = false
+render_target_update_mode = 4
+
+[node name="console_panel" type="Control" parent="panel/SubViewportContainer/SubViewport"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="panel/SubViewportContainer/SubViewport/console_panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="output" type="RichTextLabel" parent="panel/SubViewportContainer/SubViewport/console_panel/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+focus_mode = 2
+theme = SubResource("Theme_2kae5")
+text = "<Console Panel>"
+scroll_following = true
+selection_enabled = true
+
+[node name="input_line" type="LineEdit" parent="panel/SubViewportContainer/SubViewport/console_panel/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme = SubResource("Theme_knruy")
+placeholder_text = "(press 'T')"
+
+[connection signal="gui_input" from="panel/SubViewportContainer/SubViewport/console_panel/VBoxContainer/output" to="." method="_on_output_gui_input"]
+[connection signal="text_submitted" from="panel/SubViewportContainer/SubViewport/console_panel/VBoxContainer/input_line" to="." method="_on_input_line_text_submitted"]
