@@ -9,7 +9,7 @@ var virtual_remote_hub_offline = preload("res://session/virtual_remote_hub/virtu
 var virtual_remote_hub_online = preload("res://session/virtual_remote_hub/virtual_remote_hub_online.tscn")
 
 var enet := ENetMultiplayerPeer.new()
-var space_projection = preload("res://session/hub/space/space_projection.tscn")
+var space_projection = preload("res://session/local_hub/space/space_projection.tscn")
 var start_menu = preload("res://start_menu/start_menu.tscn")
 
 var connection_buffer : PackedByteArray # buffer to be sent when server connected

@@ -5,7 +5,7 @@ const tool_name := &"pointer"
 
 @onready var player_head = %player/head
 @onready var laser_pointer : RayCast3D = %player/head/laser_pointer
-@onready var voxel_pointer = preload("res://session/hub/space/player/modules/pointer/voxel_pointer.tscn").instantiate()
+@onready var voxel_pointer = preload("res://session/local_hub/space/player/modules/pointer/voxel_pointer.tscn").instantiate()
 
 @onready var console = $"../console"
 

@@ -1,6 +1,6 @@
 [gd_scene load_steps=7 format=3 uid="uid://blogxlkgokqjm"]
 
-[ext_resource type="Script" path="res://session/hub/space/player/3d_hud/hud_console/console_window.gd" id="1_u10un"]
+[ext_resource type="Script" path="res://session/local_hub/space/player/3d_hud/hud_console/console_window.gd" id="1_u10un"]
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_1s8t5"]
 viewport_path = NodePath("panel/SubViewportContainer/SubViewport")

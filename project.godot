@@ -38,8 +38,8 @@ project/assembly_name="Auth Client"
 
 folder_colors={
 "res://session/": "gray",
-"res://session/hub/": "gray",
-"res://session/hub/space/player/": "green",
+"res://session/local_hub/": "gray",
+"res://session/local_hub/space/player/": "green",
 "res://session/virtual_remote_hub/": "gray",
 "res://session/virtual_remote_hub/space/objects/": "blue",
 "res://session/virtual_remote_hub/space/player/": "green"

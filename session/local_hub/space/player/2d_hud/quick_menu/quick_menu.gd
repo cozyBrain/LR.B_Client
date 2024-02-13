@@ -5,7 +5,7 @@ var previous_menu
 
 var mouse_hovering_button # current mouse_hovering_button
 
-var default_button_theme := load("res://session/hub/space/player/2d_hud/quick_menu/quick_menu_default_button_theme.tres")
+var default_button_theme := load("res://session/local_hub/space/player/2d_hud/quick_menu/quick_menu_default_button_theme.tres")
 
 # Design
 #    -Connector
@@ -134,7 +134,7 @@ func add_button(new_button, path := "./", is_directory := false):
 	if is_directory:
 		pass
 func basic_setup_button(button):
-	button.set_script(load("res://session/hub/space/player/2d_hud/quick_menu/quick_menu_button.gd"))
+	button.set_script(load("res://session/local_hub/space/player/2d_hud/quick_menu/quick_menu_button.gd"))
 	button.name = button.text
 	button.theme = default_button_theme
 

@@ -6,7 +6,7 @@ const module_name = &"chunk_projection"
 var chunks: Dictionary # {pos: chunk}
 
 static var chunk_size = Chunk.chunk_size ## TODO: Update
-@onready var chunk_item = preload("res://session/hub/space/modules/chunk_projection/chunk_item.tscn")
+@onready var chunk_item = preload("res://session/local_hub/space/modules/chunk_projection/chunk_item.tscn")
 
 @onready var intobject_pre_allocation_tick := $intobject_pre_allocation_tick as Timer
 var intobject_pre_allocation_tick_interval := 0.05 # in seconds

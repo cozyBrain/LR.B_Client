@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://dgeqavalxkiof"]
 
-[ext_resource type="Script" path="res://session/hub/space/modules/chunk_projection/chunk_item.gd" id="1_l4fyl"]
+[ext_resource type="Script" path="res://session/local_hub/space/modules/chunk_projection/chunk_item.gd" id="1_l4fyl"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_cole7"]
 
