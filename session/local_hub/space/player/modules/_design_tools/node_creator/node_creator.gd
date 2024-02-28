@@ -18,7 +18,7 @@ func handle(v: Dictionary):
 		null:
 			pass
 		var task_id:
-			# clear the task.
+			# Clear the task.
 			var task = instance_from_id(task_id)
 			if task != null:
 				unified_chunk_observer.unobserve_deferred(task)
@@ -33,17 +33,17 @@ func _ready():
 
 
 func register_quick_menu_button():
-	# create [node_creator] button in the "Design" category
+	# create [node_creator] button in the "Design" category.
 	var category = "Design"
 	var new_button := Button.new()
 	new_button.text = tool_name
 	new_button.connect("pressed", _on_tool_selected)
 	quick_menu.add_button(new_button, category, true)
 	
-	# add node_selection_button
+	# add node_selection_button.
 	node_selection_button.text = "select_node"
 	var popup = node_selection_button.get_popup()
-	# get existing nodes
+	# get existing nodes.
 	for n in node.scripts:
 		if typeof(n) == TYPE_STRING:
 			popup.add_item(n)
@@ -60,7 +60,7 @@ func deselect():
 
 func _on_node_selected(id : int):
 	node_selection = node_selection_button.get_popup().get_item_text(id)
-	# show which node is selected
+	# show which node is selected.
 	node_selection_button.text = "select [{selection}]".format({"selection":node_selection})
 
 
@@ -79,7 +79,7 @@ func _unhandled_input(event):
 					unified_chunk_observer.observe(task)
 					# Wait until the chunk is guaranteed to be accessible.
 					await task.done
-					# Create node
+					# Create node.
 					terminal.handle(
 						{
 							"Hub": 				terminal.virtual_remote_hub,
@@ -94,7 +94,7 @@ func _unhandled_input(event):
 						}
 					)
 				elif event.button_index == MOUSE_BUTTON_RIGHT:
-					# remove node
+					# Remove node.
 					print(
 						{
 							"Hub": 				terminal.virtual_remote_hub,

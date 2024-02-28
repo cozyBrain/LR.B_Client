@@ -53,6 +53,7 @@ func _on_new_space_config_menu_create_button_pressed():
 	instantiated_new_space_config_menu.queue_free()
 	if new_space_config.name == "":
 		new_space_config.name = Time.get_datetime_string_from_system()
+		new_space_config.name = (new_space_config.name as String).replace(":", "-") # for OS, Windows.
 	directory.update_space_location(new_space_config["name"])
 	DirAccess.make_dir_absolute(directory.current_space_dir_location)
 	DirAccess.make_dir_absolute(directory.chunk_dir_location)

@@ -44,16 +44,18 @@ func stringify_chunk_pos(pos : Vector3i) -> String:
 
 #region player
 func load_player(id : String):
-	var f = FileAccess.open_compressed(player_dir_location+'/'+id, FileAccess.READ, FileAccess.COMPRESSION_GZIP)
+	var target_path: String = player_dir_location+'/'+id
+	var f = FileAccess.open_compressed(target_path, FileAccess.READ, FileAccess.COMPRESSION_GZIP)
 	if f == null:
-		printerr("failed to load player! ", error_string(FileAccess.get_open_error()))
+		printerr("failed to load player at ", target_path+" ", error_string(FileAccess.get_open_error()))
 		return null
 	return f.get_var()
 	
 func save_player(id : String, save_data : Dictionary):
-	var f = FileAccess.open_compressed(player_dir_location+'/'+id, FileAccess.WRITE, FileAccess.COMPRESSION_GZIP)
+	var target_path: String = player_dir_location+'/'+id
+	var f = FileAccess.open_compressed(target_path, FileAccess.WRITE, FileAccess.COMPRESSION_GZIP)
 	if f == null:
-		printerr("failed to save player! ", error_string(FileAccess.get_open_error()))
+		printerr("failed to save player at ", target_path+" ", error_string(FileAccess.get_open_error()))
 		return
 	f.store_var(save_data)
 #endregion
