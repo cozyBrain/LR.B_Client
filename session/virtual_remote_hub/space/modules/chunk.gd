@@ -17,7 +17,7 @@ class chunk_item:
 	static var broadcast_chunk_update_tick: Timer ## Connected to self.broadcast_chunk_update() when there's observer.
 	var chunk_pos: Vector3i ## Set by Chunk.set_chunk(pos, new_chunk).
 	var _intobject: Array # [][][] 3D
-	var _flobject: Array  # []
+	var _flobject: Array  ## about to be octree
 	var observers: Dictionary # {player...}
 	
 	var projection_snapshot: Array ## Merged with projection changes to update snapshot when project_changes() is called.

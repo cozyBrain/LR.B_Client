@@ -68,7 +68,7 @@ func unobserve(chunk_pos: Vector3i, observer, accumulable: bool = true):
 
 func enqueue_new_request(observer, observation: int, chunk_pos: Vector3i):
 	var observer_name: String = observer.module_name
-	# Enqueue new request.
+	# Consolidate requests by observer_name.
 	if not observation_request.has(observer_name):
 		observation_request[observer_name] = []
 	observation_request[observer_name].append([observation, chunk_pos])

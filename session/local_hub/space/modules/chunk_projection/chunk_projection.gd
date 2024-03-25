@@ -32,10 +32,10 @@ func handle(v: Dictionary):
 		&"observe_chunk":
 			var chunk_pos = v.get("pos")
 			chunk_pos = Vector3i(chunk_pos[0], chunk_pos[1], chunk_pos[2])
-			var latest_chunk = v.get("chunk")
-			if not len(latest_chunk) < 4:
-				latest_chunk = bytes_to_var(v.get("chunk"))
-				if latest_chunk == null:
+			var chunk_update = v.get("chunk")
+			if not len(chunk_update) < 4:
+				chunk_update = bytes_to_var(v.get("chunk"))
+				if chunk_update == null:
 					return
 				var chunk = chunks.get(chunk_pos) as proj_chunk_item
 				if chunk == null:
@@ -46,7 +46,7 @@ func handle(v: Dictionary):
 					add_child(chunk)
 					chunk.rescale(chunk_size)
 				
-				chunk.intobject_changes = latest_chunk["intobject"]
+				chunk.intobject_changes = chunk_update["intobject"]
 				thread_project_changes.wait_to_finish()
 				thread_project_changes.start(chunk.project_changes)
 				
@@ -113,7 +113,7 @@ func update_visible_range(player_position : Vector3, spawn := false):
 						if previous_visible_chunks.has(chunk_pos): # Only previously observe queued.
 							%player.chunk_observer.unobserve(chunk_pos, self, false)
 							prev_invisible_chunks[chunk_pos] = null
-							free_chunk(chunk_pos)
+							free_chunk(chunk_pos) ## TODO: Consider Links. chunk_observer is for this problem.
 		
 		%player.chunk_observer.flush()
 		

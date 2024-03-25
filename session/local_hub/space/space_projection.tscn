@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://cmkkec0mugg7y"]
+[gd_scene load_steps=19 format=3 uid="uid://cmkkec0mugg7y"]
 
 [ext_resource type="Script" path="res://session/local_hub/space/player/player.gd" id="1_b5vu3"]
 [ext_resource type="Environment" uid="uid://cvugm5xmaatil" path="res://session/local_hub/space/space_projection_world_environment.tres" id="2_234cb"]
@@ -12,6 +12,7 @@
 [ext_resource type="Script" path="res://session/local_hub/space/player/modules/_design_tools/node_creator/node_creator.gd" id="9_kq4ux"]
 [ext_resource type="Script" path="res://session/local_hub/space/player/modules/unified_chunk_observer/unified_chunk_observer.gd" id="10_ip36i"]
 [ext_resource type="Script" path="res://session/local_hub/space/modules/chunk_projection/chunk_projection.gd" id="10_mdjmk"]
+[ext_resource type="Script" path="res://session/local_hub/space/player/modules/_design_tools/link_creator/link_creator.gd" id="11_f0q3g"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_ocn5h"]
 
@@ -181,6 +182,9 @@ script = ExtResource("9_bc0rt")
 
 [node name="unified_chunk_observer" type="Node" parent="player/player_modules"]
 script = ExtResource("10_ip36i")
+
+[node name="link_creator" type="Node" parent="player/player_modules"]
+script = ExtResource("11_f0q3g")
 
 [node name="space_modules" type="Node3D" parent="."]
 unique_name_in_owner = true

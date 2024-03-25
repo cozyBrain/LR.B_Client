@@ -5,8 +5,8 @@ extends CharacterBody3D
 @onready var head = $head
 @onready var _3d_hud = %"3d_hud_projector"
 @onready var console = _3d_hud.get_node("console")
-@onready var chunk_projection = %space_modules/chunk_projection
-@onready var chunk_observer = %player_modules/chunk_observer
+@onready var chunk_projection = %space_modules/chunk_projection as client_space_module_chunk_projection
+@onready var chunk_observer = %player_modules/chunk_observer as client_player_module_chunk_observer
 
 var speed : float = speed_default
 var speed_default : float = 5
