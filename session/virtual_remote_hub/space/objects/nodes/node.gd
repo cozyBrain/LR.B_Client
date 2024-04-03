@@ -1,3 +1,4 @@
+
 extends Node
 
 const out_port := &"out_port"
@@ -5,14 +6,16 @@ const in_port := &"in_port"
 
 var scripts: Dictionary  ## loaded scripts {id: gdscript, hashed_id: gdscript}
 var meshes: Dictionary
-var collision_shapes: Dictionary
+var static_bodies: Dictionary
+var areas: Dictionary
 
 func _ready():
 	# preload
 	load_nodes()
 	# client_side program going to use these
 	load_meshes()
-	load_collision_shapes()
+	load_static_bodies()
+	load_areas()
 
 
 func load_nodes():
@@ -25,6 +28,10 @@ func load_nodes():
 func load_meshes():
 	for mesh_dir in directory.res_mesh_dirs:
 		meshes[StringName(mesh_dir)] = load(directory.res_mesh_dir_location+mesh_dir+"/mesh.tres")
-func load_collision_shapes():
-	for cs_dir in directory.res_collision_shape_dirs:
-		collision_shapes[StringName(cs_dir)] = load(directory.res_collision_shape_dir_location+cs_dir+"/cs.tscn")
+func load_static_bodies():
+	for dir in directory.res_static_body_dirs:
+		static_bodies[StringName(dir)] = load(directory.res_static_body_dir_location+dir+"/static_body.tscn")
+func load_areas():
+	for dir in directory.res_area_dirs:
+		areas[StringName(dir)] = load(directory.res_area_dir_location+dir+"/area.tscn")
+

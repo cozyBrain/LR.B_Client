@@ -111,6 +111,10 @@ pointing/emulate_touch_from_mouse=true
 
 locale/translations=PackedStringArray("res://lang/trans.en.translation", "res://lang/trans.kr.translation")
 
+[layer_names]
+
+3d_physics/layer_2="chunk"
+
 [physics]
 
 3d/run_on_separate_thread=true

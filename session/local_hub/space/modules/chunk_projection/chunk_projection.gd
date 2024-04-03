@@ -1,11 +1,14 @@
 class_name client_space_module_chunk_projection
 extends Node3D
 
+const CHUNK_LAYER = 0b00000000_00000000_00000000_00000010 ## collision_layer and mask for chunk detection.
+
 const module_name = &"chunk_projection"
+
+static var chunk_size = Chunk.chunk_size ## TODO: Update
 
 var chunks: Dictionary # {pos: chunk}
 
-static var chunk_size = Chunk.chunk_size ## TODO: Update
 @onready var chunk_item = preload("res://session/local_hub/space/modules/chunk_projection/chunk_item.tscn")
 
 @onready var intobject_pre_allocation_tick := $intobject_pre_allocation_tick as Timer

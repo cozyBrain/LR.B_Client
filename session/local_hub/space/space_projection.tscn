@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://cmkkec0mugg7y"]
+[gd_scene load_steps=20 format=3 uid="uid://cmkkec0mugg7y"]
 
 [ext_resource type="Script" path="res://session/local_hub/space/player/player.gd" id="1_b5vu3"]
 [ext_resource type="Environment" uid="uid://cvugm5xmaatil" path="res://session/local_hub/space/space_projection_world_environment.tres" id="2_234cb"]
@@ -13,6 +13,7 @@
 [ext_resource type="Script" path="res://session/local_hub/space/player/modules/unified_chunk_observer/unified_chunk_observer.gd" id="10_ip36i"]
 [ext_resource type="Script" path="res://session/local_hub/space/modules/chunk_projection/chunk_projection.gd" id="10_mdjmk"]
 [ext_resource type="Script" path="res://session/local_hub/space/player/modules/_design_tools/link_creator/link_creator.gd" id="11_f0q3g"]
+[ext_resource type="Script" path="res://session/local_hub/space/modules/link_projection/link_projection.gd" id="13_bpkyt"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_ocn5h"]
 
@@ -68,6 +69,7 @@ size = Vector3(0.25, 0.25, 0.6)
 
 [node name="laser_pointer" type="RayCast3D" parent="player/head"]
 target_position = Vector3(0, 0, -2)
+collide_with_areas = true
 debug_shape_custom_color = Color(0.027451, 0.67451, 0.74902, 1)
 
 [node name="chunks_detector" type="Node3D" parent="player/head/laser_pointer"]
@@ -193,6 +195,9 @@ unique_name_in_owner = true
 script = ExtResource("10_mdjmk")
 
 [node name="intobject_pre_allocation_tick" type="Timer" parent="space_modules/chunk_projection"]
+
+[node name="link_projection" type="Node3D" parent="space_modules"]
+script = ExtResource("13_bpkyt")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = ExtResource("2_234cb")

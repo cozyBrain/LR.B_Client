@@ -58,7 +58,7 @@ func project_changes():
 							# create and setup new obj_painter for the shape.
 							painter = obj_painter.new()
 							painter.set_mesh(node.meshes[shape_id])
-							painter.set_collision_shape(node.collision_shapes[shape_id])
+							painter.set_collision_shape(node.static_bodies[shape_id])
 							obj_painters[shape_id] = painter
 						
 						painter.paint_at(pos, color)

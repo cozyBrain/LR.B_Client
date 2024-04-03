@@ -1,0 +1,12 @@
+[gd_scene load_steps=3 format=3 uid="uid://w82hf2pfqflc"]
+
+[ext_resource type="Script" path="res://session/virtual_remote_hub/space/objects/shapes/box/area.gd" id="1_l4vef"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_baje6"]
+
+[node name="Box" type="Area3D"]
+script = ExtResource("1_l4vef")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("BoxShape3D_baje6")
+disabled = true

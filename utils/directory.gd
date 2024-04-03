@@ -65,5 +65,7 @@ var res_node_dirs = DirAccess.get_directories_at(res_node_dir_location)
 
 const res_mesh_dir_location := "res://session/virtual_remote_hub/space/objects/shapes/"
 var res_mesh_dirs = DirAccess.get_directories_at(res_mesh_dir_location)
-const res_collision_shape_dir_location := "res://session/virtual_remote_hub/space/objects/shapes/"
-var res_collision_shape_dirs = DirAccess.get_directories_at(res_collision_shape_dir_location)
+const res_area_dir_location := "res://session/virtual_remote_hub/space/objects/shapes/"
+var res_area_dirs = DirAccess.get_directories_at(res_area_dir_location)
+const res_static_body_dir_location := "res://session/virtual_remote_hub/space/objects/shapes/"
+var res_static_body_dirs = DirAccess.get_directories_at(res_static_body_dir_location)

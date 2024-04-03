@@ -3,6 +3,8 @@ extends Node
 @onready var quick_menu = %quick_menu
 @onready var pointer := $"../pointer" as client_player_module_pointer
 @onready var unified_chunk_observer = %player_modules/unified_chunk_observer as client_player_module_unified_chunk_observer
+@onready var link_projection = %space_modules/link_projection as client_space_module_link_projection
+
 
 var tool_name := &"link_creator"
 
@@ -27,13 +29,24 @@ func _on_tool_selected():
 func deselect():
 	set_process_unhandled_input(false)
 
-	# config link
-	#var distance = A.translation.distance_to(B.translation)
-	#var position = (A.translation + B.translation) / 2
-	#var direction = A.translation.direction_to(B.translation)
-	#setLength(distance)
-	#var d = direction
-	#d.x = 1 if d.x == 0 else 0
-	#d.y = 1 if d.y == 0 else 0
-	#d.z = 1 if d.y == 0 else 0
-	#look_at_from_position(position, A.translation, d)
+
+## A(start_point), B(end_point)
+func foo(A: Vector3, B: Vector3):
+	var link := node.areas[&"triLink"] as Node3D
+	
+	# Config link.
+	var distance = A.distance_to(B)
+	var position = (A + B) / 2
+	# Set link length.
+	link.scale.y = distance
+	
+	var d := A.direction_to(B) as Vector3
+	d.x = 1 if d.x == 0 else 0
+	d.y = 1 if d.y == 0 else 0
+	d.z = 1 if d.y == 0 else 0
+	link.look_at_from_position(position, A, d)
+	
+	link.set_collision_layer_and_mask_to_chunk_layer()
+	#LinkModule.add_child(link)
+	link_projection.add_child(link)
+	
