@@ -113,10 +113,10 @@ func _unhandled_input(event):
 	elif Input.is_action_just_pressed("console_switch_window_mode"): # key R
 		console.switch_window_size_between_default_and_typing_mode()
 	elif Input.is_action_just_pressed("console_type"): # key t
-		console.start_typing()
+		console.start_typing() # Emit signal to let other modules ignore input.
 		set_process_unhandled_input(false)
-			
-			
+		
+
 
 func _on_console_typing_stopped():
 	set_process_unhandled_input(true)

@@ -11,6 +11,7 @@ var WindowSizes := [typing_win_size, default_win_size]
 var window_mode = WindowMode.Default
 var is_typing := false
 
+signal typing_started
 signal typing_stopped
 
 
@@ -57,6 +58,7 @@ func start_typing():
 	input_line.grab_focus()
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	$panel/SubViewportContainer.mouse_filter = SubViewportContainer.MOUSE_FILTER_PASS
+	emit_signal("typing_started")
 
 func stop_typing():
 	apply_current_window_mode()

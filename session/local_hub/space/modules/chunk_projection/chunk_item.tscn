@@ -1,8 +1,18 @@
-[gd_scene load_steps=3 format=3 uid="uid://dgeqavalxkiof"]
+[gd_scene load_steps=5 format=3 uid="uid://dgeqavalxkiof"]
 
 [ext_resource type="Script" path="res://session/local_hub/space/modules/chunk_projection/chunk_item.gd" id="1_l4fyl"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_cole7"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_smens"]
+transparency = 1
+albedo_color = Color(1, 1, 1, 0.0470588)
+emission_enabled = true
+emission = Color(1, 1, 1, 1)
+emission_energy_multiplier = 2.21
+
+[sub_resource type="BoxMesh" id="BoxMesh_wcj3l"]
+material = SubResource("StandardMaterial3D_smens")
 
 [node name="chunk_item" type="Node3D"]
 script = ExtResource("1_l4fyl")
@@ -14,3 +24,6 @@ collision_mask = 2
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0.5, 0.5)
 shape = SubResource("BoxShape3D_cole7")
+
+[node name="ChunkVisualization" type="MeshInstance3D" parent="Area3D/CollisionShape3D"]
+mesh = SubResource("BoxMesh_wcj3l")

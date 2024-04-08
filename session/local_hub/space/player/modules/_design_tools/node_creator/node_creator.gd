@@ -3,6 +3,7 @@ extends Node
 @onready var quick_menu = %quick_menu
 @onready var pointer := $"../pointer" as client_player_module_pointer
 @onready var unified_chunk_observer = %player_modules/unified_chunk_observer as client_player_module_unified_chunk_observer
+@onready var console_window = %"3d_hud_projector"/console
 
 
 var node_selection_button := MenuButton.new()
@@ -30,6 +31,15 @@ func handle(v: Dictionary):
 func _ready():
 	register_quick_menu_button()
 	set_process_unhandled_input(false)
+	# Connect console_window's typing signal to ignore input when player is typing.
+	console_window.connect("typing_started", _on_console_typing_started)
+	console_window.connect("typing_stopped", _on_console_typing_stopped)
+
+func _on_console_typing_started():
+	set_process_unhandled_input(false)
+func _on_console_typing_stopped():
+	if %player.selected_tool == self:
+		set_process_unhandled_input(true)
 
 
 func register_quick_menu_button():

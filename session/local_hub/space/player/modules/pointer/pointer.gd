@@ -6,6 +6,7 @@ const tool_name := &"pointer"
 @onready var player_head = %player/head
 @onready var laser_pointer : RayCast3D = %player/head/laser_pointer
 @onready var voxel_pointer = preload("res://session/local_hub/space/player/modules/pointer/voxel_pointer.tscn").instantiate()
+@onready var console_window = %"3d_hud_projector"/console
 
 @onready var console = $"../console"
 
@@ -23,14 +24,22 @@ var current_mode := Mode.LaserPointer
 func _ready():
 	# apply current_mode
 	apply_mode()
-	
 	register_quick_menu_button()
+	# Connect console_window's typing signal to ignore input when player is typing.
+	console_window.connect("typing_started", _on_console_typing_started)
+	console_window.connect("typing_stopped", _on_console_typing_stopped)
+
+func _on_console_typing_started():
+	set_process_unhandled_input(false)
+func _on_console_typing_stopped():
+	#if %player.selected_tool == self:
+	set_process_unhandled_input(true)
 
 func _on_inspect_position():
 	print_position()
 
 func _on_tool_selected():
-	(%player as client_player).select_tool(self)
+	%player.select_tool(self)
 func deselect():
 	print(tool_name, " deselected")
 
