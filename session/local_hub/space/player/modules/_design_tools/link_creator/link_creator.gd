@@ -62,18 +62,27 @@ func _unhandled_input(event):
 					if start_points.is_empty():
 						console.print_line(["No start points selected."])
 					else:
+						var links_to_create := []
 						for point in start_points:
 							var link = load("res://session/virtual_remote_hub/space/objects/shapes/triLink/area(visible).tscn").instantiate()
+							@warning_ignore("static_called_on_instance")
 							var aligned_link = align_link(point, pos, link)
 							link_projection.add_child(aligned_link)
-							var link_pointer_pos := calculate_intermediate_link_pointer_positions(point, pos, Chunk.chunk_size*2)
-							print(link_pointer_pos)
-					
-				elif event.button_index == MOUSE_BUTTON_RIGHT:
+							@warning_ignore("static_called_on_instance")
+							var link_pointer_pos: Array[Vector3i] = [point] # start_point
+							link_pointer_pos.append_array(calculateChunkPosForLinkPointer(point, pos, 0.5))
+							link_pointer_pos.append(pos) # end_point
+							links_to_create.append(link_pointer_pos)
+						##TODO: Send request data to the remote_hub.
+						print("links_to_create: ", links_to_create)
+						
+						
+				elif event.button_index == MOUSE_BUTTON_RIGHT: ##TODO: Visualize selected start_points.
 					# Add point as start point of the link.
 					# Append the point until player reset. (reset button is 'R' by default.)
-					start_points.append(pos)
-					print(start_points)
+					start_points.append(pos) ##TODO: Prevent point duplication.
+					print("Added a start_point: ", pos)
+					print("start_points: ", start_points)
 	
 	if Input.is_action_just_pressed("reset"):
 		# Reset start_points.
@@ -102,14 +111,23 @@ static func align_link(A: Vector3, B: Vector3, link: Object) -> Object:
 #Dictionary[link_id] = Dictionary[link_id] + 1
 
 ## start and end_point shouldn't be chunk pos.
-static func calculate_intermediate_link_pointer_positions(start_point: Vector3, end_point: Vector3, distance_threshold) -> Array[Vector3i]:
+static func calculateChunkPosForLinkPointer(start_point: Vector3, end_point: Vector3, distance_threshold) -> Array[Vector3i]:
 	var distance = start_point.distance_to(end_point)
 	var link_pointer_count = max(2, int(distance / distance_threshold))
+	var start_point_chunk := Chunk.global_pos_to_chunk_pos(start_point, client_space_module_chunk_projection.chunk_size)
+	var end_point_chunk := Chunk.global_pos_to_chunk_pos(end_point, client_space_module_chunk_projection.chunk_size)
 	var chunk_pos_list: Array[Vector3i] = []
-	chunk_pos_list.resize(link_pointer_count - 2)
 	
-	for i in range(1, link_pointer_count-1):
+	for i in range(1, link_pointer_count):
 		var t = float(i) / (link_pointer_count - 1)
-		var link_pointer_position = start_point.lerp(end_point, t)
-		chunk_pos_list[i-1] = Chunk.global_pos_to_chunk_pos(link_pointer_position, client_space_module_chunk_projection.chunk_size)
+		var link_pointer_chunk_pos = Chunk.global_pos_to_chunk_pos(start_point.lerp(end_point, t), client_space_module_chunk_projection.chunk_size)
+		# Exclude start_point_chunk and end_point_chunk position.
+		if link_pointer_chunk_pos == start_point_chunk or link_pointer_chunk_pos == end_point_chunk:
+			continue
+		# Prevent duplication
+		if not chunk_pos_list.is_empty():
+			if chunk_pos_list.back() == link_pointer_chunk_pos:
+				continue
+		chunk_pos_list.append(link_pointer_chunk_pos)
+	
 	return chunk_pos_list
