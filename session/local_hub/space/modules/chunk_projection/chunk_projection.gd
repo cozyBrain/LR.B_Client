@@ -124,7 +124,7 @@ func update_visible_range(player_position : Vector3, spawn := false):
 			# Unblock to observe the unobserve_queued_chunk.
 			previous_visible_chunks.erase(pos)
 		
-		
+		print("current_chunk_pos: ", current_chunk_pos)
 		#print(
 			#"current_chunk_pos: ", current_chunk_pos,\
 			#"  loaded_chunks: ", space_module_chunk.get_total_loaded_chunks(),\

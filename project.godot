@@ -42,7 +42,8 @@ folder_colors={
 "res://session/local_hub/space/player/": "green",
 "res://session/virtual_remote_hub/": "gray",
 "res://session/virtual_remote_hub/space/objects/": "blue",
-"res://session/virtual_remote_hub/space/player/": "green"
+"res://session/virtual_remote_hub/space/player/": "green",
+"res://test/": "gray"
 }
 
 [input]

@@ -8,3 +8,6 @@ static var chunk_size = Chunk.chunk_size ## TODO: Update
 ## link specific chunk
 var chunk: Dictionary = {}
 
+var rendered_link: Dictionary = {}
+
+

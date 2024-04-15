@@ -1,4 +1,3 @@
-
 extends Node
 
 const out_port := &"out_port"

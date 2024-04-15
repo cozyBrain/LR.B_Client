@@ -1,4 +1,11 @@
-[gd_resource type="PrismMesh" format=3 uid="uid://c52257ha7ft4"]
+[gd_resource type="PrismMesh" load_steps=2 format=3 uid="uid://c52257ha7ft4"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dgktk"]
+albedo_color = Color(0.419608, 0.423529, 0.00784314, 1)
+emission_enabled = true
+emission = Color(0.419608, 0.423529, 0.00784314, 1)
+emission_energy_multiplier = 0.6
 
 [resource]
+material = SubResource("StandardMaterial3D_dgktk")
 size = Vector3(1, 0.88, 1)

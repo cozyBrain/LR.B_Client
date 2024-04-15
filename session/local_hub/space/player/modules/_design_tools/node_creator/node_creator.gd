@@ -78,7 +78,7 @@ func _unhandled_input(event):
 	if event is InputEventMouseButton:
 		if event.is_pressed():
 			var pos = pointer.get_pointer_position()
-			var chunk_pos_to_observe: Vector3i = Chunk.global_pos_to_chunk_pos(pos, client_space_module_chunk_projection.chunk_size)
+			var chunk_pos_to_observe: Vector3i = Chunk.global_pos_to_chunk_pos(pos, client_space_module_chunk_projection.chunk_size) ##TODO: Update.
 			if typeof(pos) == TYPE_VECTOR3I:
 				if event.button_index == MOUSE_BUTTON_LEFT and pointer.current_mode == pointer.Mode.VoxelPointer and not node_selection == "":
 					# Create task to observe target_chunk.
