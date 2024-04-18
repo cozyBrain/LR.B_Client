@@ -10,19 +10,20 @@ var number_of_partitions := 2
 var partition: Array[Dictionary] # [dict{chunks...}, dict{chunks...}...]
 
 
-
 class chunk_item:
-	enum {Intobject, Flobject, ObjPosTypes}
+	enum {INTOBJECT, FLOBJECT, LINK_POINTER, OBJ_TYPES}
 	static var intobject_pool: intobject_space_pool
 	static var broadcast_chunk_update_tick: Timer ## Connected to self.broadcast_chunk_update() when there's observer.
 	var chunk_pos: Vector3i ## Set by Chunk.set_chunk(pos, new_chunk).
 	var _intobject: Array # [][][] 3D
 	var _flobject: Array  ## about to be octree
+	var _link_pointer: Dictionary ## link_pointer[start, end, channel]
+	var link_pointer_change_set: Dictionary
 	var observers: Dictionary # {player...}
 	
-	var projection_snapshot: Array ## Merged with projection changes to update snapshot when project_changes() is called.
-	var compressed_projection_snapshot: PackedByteArray ## Updated when is_compressed_snapshot_update_pending.
+	var projection_snapshot: Array ## Merged with projection changes to update snapshot when project_changes() is called. This is for new observer.
 	var projection_changes: PackedByteArray ## Updated when is_projection_update_pending.
+	var compressed_projection_snapshot: PackedByteArray ## Updated when is_compressed_snapshot_update_pending.
 	var is_projection_update_pending := false ## Objs in the chunk can call queue_projection_update() so that the chunk get changes from the objects. project_changes() will reset this to false.
 	var is_compressed_snapshot_update_pending := false ## Prevent meaningless var_to_bytes() call.
 	var save_data: Dictionary ## Holds some resources for a moment to be returned by return_res().
@@ -30,7 +31,7 @@ class chunk_item:
 	
 	func _init() -> void:
 		# init projection_sapshot.
-		projection_snapshot.resize(ObjPosTypes)
+		projection_snapshot.resize(OBJ_TYPES)
 		projection_snapshot.fill([])
 		
 	func return_res() -> void: ## before free, return_res() for performance and to disconnect signals.
@@ -43,8 +44,8 @@ class chunk_item:
 			intobject_pool.return_res(_intobject)
 		# Return projection_snapshot.
 		if not projection_snapshot.is_empty():
-			if not projection_snapshot[Intobject].is_empty():
-				intobject_pool.return_res(projection_snapshot[Intobject])
+			if not projection_snapshot[INTOBJECT].is_empty():
+				intobject_pool.return_res(projection_snapshot[INTOBJECT])
 		# Disconnect signals
 		if broadcast_chunk_update_tick.timeout.is_connected(broadcast_chunk_update):
 			broadcast_chunk_update_tick.timeout.disconnect(broadcast_chunk_update)
@@ -61,7 +62,7 @@ class chunk_item:
 						var obj: Chunk_obj = node.scripts[obj_id].new().load_save_data(obj_save_data)
 						insert_intobject(Vector3i(x,y,z), obj, true)
 						intobject_snapshot[x][y][z] = obj.project_changes()
-		projection_snapshot[Intobject] = intobject_snapshot
+		projection_snapshot[INTOBJECT] = intobject_snapshot
 		#projection_snapshot[Flobject] = flobject_snapshot
 		
 		# Create compressed_snapshot after loading intobject & flobject.
@@ -97,7 +98,7 @@ class chunk_item:
 		if _intobject.is_empty():
 			# Setup intobject space and snapshot for the intobject.
 			_intobject = intobject_pool.borrow_res()
-			projection_snapshot[Intobject] = intobject_pool.borrow_res()
+			projection_snapshot[INTOBJECT] = intobject_pool.borrow_res()
 		# Let obj access to parent_chunk.
 		obj.parent_chunk = self
 		_intobject[pos.x][pos.y][pos.z] = obj
@@ -105,7 +106,15 @@ class chunk_item:
 			queue_projection_update()
 			enable_save_on_unload()
 		return true
+	func get_intobject(pos: Vector3i) -> Object:
+		if not _intobject.is_empty():
+			return _intobject[pos.x][pos.y][pos.z]
+		return null
 	
+	func insert_link_pointer(link_pointer: Array): ##TODO: Update link_pointer_change_set
+		_link_pointer[link_pointer] = false
+		queue_projection_update()
+		enable_save_on_unload()
 	
 	func observe(o) -> void:
 		observers[o] = null
@@ -130,8 +139,9 @@ class chunk_item:
 			# Create latest compressed_projection_snapshot with projection_snapshot.
 			compressed_projection_snapshot = var_to_bytes(
 				{
-					"intobject"	:	projection_snapshot[Intobject],
+					"intobject"	:	projection_snapshot[INTOBJECT],
 					#"flobject"	:	project_flobject_changes(),
+					"link_pointer":	projection_snapshot[LINK_POINTER],
 				}
 			)
 			compressed_projection_snapshot = compress_projection(compressed_projection_snapshot)
@@ -146,10 +156,12 @@ class chunk_item:
 				{
 					"intobject"	:	project_intobject_changes(intobject_projection), 
 					"flobject"	:	project_flobject_changes(),
+					"link_pointer":	project_link_pointer_changes(),
 				}
 			)
 		return projection_changes
 	
+	## Set projection_update_pending and compressed_snapshot_update_pending true.
 	func queue_projection_update():
 		is_projection_update_pending = true
 		is_compressed_snapshot_update_pending = true
@@ -164,16 +176,16 @@ class chunk_item:
 					match obj:
 						null:
 							intobject_projection[x][y][z] = obj
-							projection_snapshot[Intobject][x][y][z] = obj
+							projection_snapshot[INTOBJECT][x][y][z] = obj
 						_: # don't change "_:" to "Chunk_obj:".
 							var changes: Dictionary = obj.project_changes()
 							if changes.is_empty():
 								intobject_projection[x][y][z] = false
 							else:
 								intobject_projection[x][y][z] = changes
-								if projection_snapshot[Intobject][x][y][z] == null:
-									projection_snapshot[Intobject][x][y][z] = Dictionary()
-								projection_snapshot[Intobject][x][y][z].merge(changes, true) # Update projection snapshot by merging changes.
+								if projection_snapshot[INTOBJECT][x][y][z] == null:
+									projection_snapshot[INTOBJECT][x][y][z] = Dictionary()
+								projection_snapshot[INTOBJECT][x][y][z].merge(changes, true) # Update projection snapshot by merging changes.
 		return intobject_projection
 	func project_flobject_changes() -> Array:
 		var flobject_projection := []
@@ -184,6 +196,8 @@ class chunk_item:
 				Chunk_obj:
 					flobject_projection.append(obj.project_changes())
 		return flobject_projection
+	func project_link_pointer_changes() -> Array:
+		return []
 	
 	func broadcast_chunk_update() -> void: ## Called by broadcast_chunk_update_tick signal.
 		if is_projection_update_pending:
@@ -239,8 +253,13 @@ class intobject_space_pool:
 
 
 # consider batch processing for get&insert_intobject().
-func get_intobject(global_pos: Vector3i, obj):
-	pass
+#func get_intobject(global_pos: Vector3i) -> bool:
+	#var chunk_pos := Chunk.global_pos_to_chunk_pos(global_pos, chunk_size)
+	#var chunk = get_chunk(chunk_pos)
+	#if chunk != null:
+		#return chunk.get_intobject(Chunk.global_pos_to_local_intobject_pos(global_pos, chunk_size))
+	#prints("get_intobject ignored! failed to get chunk:", chunk_pos)
+	#return false
 
 ## Return true if the intobject inserted.
 func insert_intobject(global_pos: Vector3i, obj) -> bool:
@@ -248,7 +267,7 @@ func insert_intobject(global_pos: Vector3i, obj) -> bool:
 	var chunk = get_chunk(chunk_pos)
 	if chunk != null:
 		return chunk.insert_intobject(Chunk.global_pos_to_local_intobject_pos(global_pos, chunk_size), obj)
-	prints("insert_intobject ignored! chunk_pos:", chunk_pos)
+	prints("insert_intobject ignored! failed to get chunk:", chunk_pos)
 	return false
 
 #region queue_variables and queue_handling

@@ -14,10 +14,22 @@ extends Node
 
 var tool_name := &"link_creator"
 
-var requested_tasks: Dictionary
-
 # link parameters
 var start_points: Array
+
+var requested_tasks: Dictionary
+
+func handle(v: Dictionary):
+	var response = v.get("Response")
+	match response:
+		null:
+			pass
+		var task_id:
+			# Clear the task.
+			var task = instance_from_id(task_id)
+			if task != null:
+				unified_chunk_observer.unobserve_deferred(task)
+				requested_tasks.erase(task)
 
 
 func _ready():
@@ -55,27 +67,49 @@ func _unhandled_input(event):
 	if event is InputEventMouseButton:
 		if event.is_pressed():
 			var pos = pointer.get_pointer_position()
-			var chunk_pos_to_observe: Vector3i = Chunk.global_pos_to_chunk_pos(pos, client_space_module_chunk_projection.chunk_size)
 			if typeof(pos) == TYPE_VECTOR3I and pointer.current_mode == pointer.Mode.VoxelPointer:
 				if event.button_index == MOUSE_BUTTON_LEFT:
 					# Connect to the obj(pos) from the start_points.
 					if start_points.is_empty():
 						console.print_line(["No start points selected."])
 					else:
+						# Create task to observe target_chunk.
+						var task := client_player_module_unified_chunk_observer.observing_task.new()
+						# Register the task to clear the task later.
+						requested_tasks[task] = true
 						var links_to_create := []
 						for point in start_points:
 							var link = load("res://session/virtual_remote_hub/space/objects/shapes/triLink/area(visible).tscn").instantiate()
 							@warning_ignore("static_called_on_instance")
 							var aligned_link = align_link(point, pos, link)
-							link_projection.add_child(aligned_link)
+							link_projection.add_child(aligned_link) # Visualize link.
 							@warning_ignore("static_called_on_instance")
-							var link_pointer_pos: Array[Vector3i] = [point] # start_point
-							link_pointer_pos.append_array(calculateChunkPosForLinkPointer(point, pos, 0.5))
-							link_pointer_pos.append(pos) # end_point
-							links_to_create.append(link_pointer_pos)
-						##TODO: Send request data to the remote_hub.
-						print("links_to_create: ", links_to_create)
-						
+							var calculated_chunkPosForLinkPointer = calculateChunkPosForLinkPointer(point, pos, 0.5)
+							# Add chunks_to_observe. (The task ignores duplication.)
+							task.add_chunk_to_observe([calculated_chunkPosForLinkPointer[0]]) # chunk pos for link pointer.
+							task.add_chunk_to_observe([calculated_chunkPosForLinkPointer[1]]) # start_point chunk pos.
+							task.add_chunk_to_observe([calculated_chunkPosForLinkPointer[2]]) # end_point chunk pos.
+							var link_data: Array[Vector3i] = [point] # start_point
+							link_data.append_array(calculated_chunkPosForLinkPointer[0])
+							link_data.append(pos) # end_point
+							link_data.append(0) # Add channel data.
+							links_to_create.append(link_data)
+						unified_chunk_observer.observe(task)
+						# Wait until the chunk is guaranteed to be accessible.
+						await task.done
+						# Create links.
+						terminal.handle(
+							{
+								"Hub": 				terminal.virtual_remote_hub,
+								"ModuleContainer": 	"Player",
+								"Module": 			tool_name,
+								"Content": {
+									"Request": 		"create",
+									"TaskID":		task.get_instance_id(),
+									"links":		links_to_create,
+								},
+							}
+						)
 						
 				elif event.button_index == MOUSE_BUTTON_RIGHT: ##TODO: Visualize selected start_points.
 					# Add point as start point of the link.
@@ -111,7 +145,7 @@ static func align_link(A: Vector3, B: Vector3, link: Object) -> Object:
 #Dictionary[link_id] = Dictionary[link_id] + 1
 
 ## start and end_point shouldn't be chunk pos.
-static func calculateChunkPosForLinkPointer(start_point: Vector3, end_point: Vector3, distance_threshold) -> Array[Vector3i]:
+static func calculateChunkPosForLinkPointer(start_point: Vector3, end_point: Vector3, distance_threshold) -> Array:
 	var distance = start_point.distance_to(end_point)
 	var link_pointer_count = max(2, int(distance / distance_threshold))
 	var start_point_chunk := Chunk.global_pos_to_chunk_pos(start_point, client_space_module_chunk_projection.chunk_size)
@@ -130,4 +164,4 @@ static func calculateChunkPosForLinkPointer(start_point: Vector3, end_point: Vec
 				continue
 		chunk_pos_list.append(link_pointer_chunk_pos)
 	
-	return chunk_pos_list
+	return [chunk_pos_list, start_point_chunk, end_point_chunk]

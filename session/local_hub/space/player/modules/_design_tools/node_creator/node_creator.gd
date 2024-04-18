@@ -85,7 +85,7 @@ func _unhandled_input(event):
 					var task := client_player_module_unified_chunk_observer.observing_task.new()
 					# Register the task to clear the task later.
 					requested_tasks[task] = true
-					task.add_chunk_to_observe(chunk_pos_to_observe)
+					task.add_chunk_to_observe([chunk_pos_to_observe])
 					unified_chunk_observer.observe(task)
 					# Wait until the chunk is guaranteed to be accessible.
 					await task.done
@@ -96,7 +96,7 @@ func _unhandled_input(event):
 							"ModuleContainer": 	"Player",
 							"Module": 			tool_name,
 							"Content": {
-								"Request": 		"create_node",
+								"Request": 		"create",
 								"TaskID":		task.get_instance_id(),
 								"id": 			node_selection.hash(),
 								"pos":			[pos.x, pos.y, pos.z]
@@ -111,7 +111,7 @@ func _unhandled_input(event):
 							"ModuleContainer": 	"Player",
 							"Module": 			tool_name,
 							"Content": {
-								"Request": 		"remove_node",
+								"Request": 		"remove",
 								"pos": 			[pos.x, pos.y, pos.z],
 							},
 						}

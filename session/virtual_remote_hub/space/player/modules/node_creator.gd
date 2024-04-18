@@ -7,11 +7,11 @@ var tool_name := &"node_creator"
 func handle(v : Dictionary):
 	var request := StringName(v.get("Request"))
 	match request:
-		&"create_node":
+		&"create":
 			var task_id = v["TaskID"]
 			var node_id_hashed  = v["id"]
 			var node_pos = v["pos"]
-			var new_node = node.scripts[node_id_hashed]
+			var new_node = node.scripts[node_id_hashed] ##TODO: Make this line safe.
 			var pos = Vector3i(node_pos[0],node_pos[1],node_pos[2])
 			space_module_chunk.insert_intobject(pos, new_node.new().create(node_id_hashed))
 			# Feedback to the client that the operation has been done.
@@ -26,7 +26,6 @@ func handle(v : Dictionary):
 					},
 				}
 			)
-			
 
 
 # create node

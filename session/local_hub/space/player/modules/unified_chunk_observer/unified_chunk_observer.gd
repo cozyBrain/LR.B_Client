@@ -55,8 +55,9 @@ class observing_task:
 				emit_signal("done")
 				return true
 		return false
-	func add_chunk_to_observe(pos: Vector3i):
-		chunks_to_observe[pos] = true
+	func add_chunk_to_observe(pos: Array[Vector3i]):
+		for p in pos:
+			chunks_to_observe[p] = true
 
 
 func observe(task: observing_task):

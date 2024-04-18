@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://bmuafmq7w5vma"]
+[gd_scene load_steps=12 format=3 uid="uid://bmuafmq7w5vma"]
 
 [ext_resource type="Script" path="res://session/virtual_remote_hub/virtual_remote_hub_offline.gd" id="1_xqj05"]
 [ext_resource type="Script" path="res://session/virtual_remote_hub/space/space.gd" id="2_06oiq"]
@@ -9,6 +9,7 @@
 [ext_resource type="Script" path="res://session/virtual_remote_hub/space/player/modules/chunk_observer.gd" id="6_t4n1l"]
 [ext_resource type="Script" path="res://session/virtual_remote_hub/space/player/modules/node_creator.gd" id="6_xloqq"]
 [ext_resource type="Script" path="res://session/virtual_remote_hub/space/player/modules/unified_chunk_observer.gd" id="7_pxavi"]
+[ext_resource type="Script" path="res://session/virtual_remote_hub/space/player/modules/link_creator.gd" id="9_wlaan"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_8c2hq"]
 
@@ -52,6 +53,9 @@ script = ExtResource("7_pxavi")
 
 [node name="node_creator" type="Node" parent="space/offline_player/player_modules"]
 script = ExtResource("6_xloqq")
+
+[node name="link_creator" type="Node" parent="space/offline_player/player_modules"]
+script = ExtResource("9_wlaan")
 
 [node name="space_modules" type="Node" parent="space"]
 unique_name_in_owner = true
