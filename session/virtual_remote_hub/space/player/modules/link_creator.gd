@@ -33,7 +33,7 @@ func handle(v : Dictionary):
 				var epoint_intobject = epoint_chunk.get_intobject(epoint)
 				epoint_intobject.connect_port(spoint, node.in_port)
 				# minimum link data size = [(0,0,0), (5,5,5), 0] # spoint, epoint, channel
-				if not link_data_size == 3:
+				if link_data_size > 3:
 					# Register link pointers.
 					var lp := [spoint, epoint, channel]
 					for i in range(1, link_data_channel_idx-2):

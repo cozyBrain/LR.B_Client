@@ -24,8 +24,14 @@ class chunk_item:
 	var projection_snapshot: Array ## Merged with projection changes to update snapshot when project_changes() is called. This is for new observer.
 	var projection_changes: PackedByteArray ## Updated when is_projection_update_pending.
 	var compressed_projection_snapshot: PackedByteArray ## Updated when is_compressed_snapshot_update_pending.
-	var is_projection_update_pending := false ## Objs in the chunk can call queue_projection_update() so that the chunk get changes from the objects. project_changes() will reset this to false.
 	var is_compressed_snapshot_update_pending := false ## Prevent meaningless var_to_bytes() call.
+	
+	## Objs in the chunk can call queue_projection_update() so that the chunk get changes from the objects.
+	var is_projection_update_pending := false ## True if any projection needs an update.
+	var is_intobject_projection_update_pending := false
+	var is_flobject_projection_update_pending := false
+	var is_link_pointer_projection_update_pending := false
+
 	var save_data: Dictionary ## Holds some resources for a moment to be returned by return_res().
 	var save_on_unload := false ## Objs can call enable_save_on_unload() to set this true.
 	
@@ -50,6 +56,7 @@ class chunk_item:
 		if broadcast_chunk_update_tick.timeout.is_connected(broadcast_chunk_update):
 			broadcast_chunk_update_tick.timeout.disconnect(broadcast_chunk_update)
 	func load_save_data(data: Dictionary) -> chunk_item: ## TODO: _flobject loading
+		# Load intobject.
 		_intobject = intobject_pool.borrow_res()
 		var intobject_snapshot = intobject_pool.borrow_res()
 		var intobject_save_data = data["_intobject"]
@@ -64,6 +71,13 @@ class chunk_item:
 						intobject_snapshot[x][y][z] = obj.project_changes()
 		projection_snapshot[INTOBJECT] = intobject_snapshot
 		#projection_snapshot[Flobject] = flobject_snapshot
+		
+		# Load link_pointer.
+		var link_pointer_save_data := data.get(["_link_pointer"], {}) as Dictionary
+		if link_pointer_save_data.is_empty():
+			projection_snapshot[LINK_POINTER] = Dictionary()
+		else:
+			projection_snapshot[LINK_POINTER] = link_pointer_save_data
 		
 		# Create compressed_snapshot after loading intobject & flobject.
 		is_compressed_snapshot_update_pending = true
@@ -87,8 +101,9 @@ class chunk_item:
 		for obj in _flobject:
 			flobject_save_data.append(obj.get_save_data())
 		save_data = {
-			"_intobject" : intobject_save_data,
-			"_flobject"  : flobject_save_data
+			"_intobject"	: intobject_save_data,
+			"_flobject"		: flobject_save_data,
+			"_link_pointer"	: _link_pointer,
 		}
 		return save_data
 	func enable_save_on_unload(enable := true):
@@ -101,9 +116,10 @@ class chunk_item:
 			projection_snapshot[INTOBJECT] = intobject_pool.borrow_res()
 		# Let obj access to parent_chunk.
 		obj.parent_chunk = self
+		obj.queue_projection_update = queue_intobject_projection_update
 		_intobject[pos.x][pos.y][pos.z] = obj
 		if not initial:
-			queue_projection_update()
+			queue_intobject_projection_update()
 			enable_save_on_unload()
 		return true
 	func get_intobject(pos: Vector3i) -> Object:
@@ -113,8 +129,14 @@ class chunk_item:
 	
 	func insert_link_pointer(link_pointer: Array): ##TODO: Update link_pointer_change_set
 		_link_pointer[link_pointer] = false
-		queue_projection_update()
+		link_pointer_change_set[link_pointer] = false
+		queue_link_pointer_projection_update()
 		enable_save_on_unload()
+	func remove_link_pointer(link_pointer: Array):
+		if _link_pointer.erase(link_pointer):
+			link_pointer_change_set[link_pointer] = null
+			queue_link_pointer_projection_update()
+			enable_save_on_unload()
 	
 	func observe(o) -> void:
 		observers[o] = null
@@ -140,31 +162,45 @@ class chunk_item:
 			compressed_projection_snapshot = var_to_bytes(
 				{
 					"intobject"	:	projection_snapshot[INTOBJECT],
-					#"flobject"	:	project_flobject_changes(),
+					#"flobject"	:	projection_snapshot[FLOBJECT],
 					"link_pointer":	projection_snapshot[LINK_POINTER],
 				}
 			)
 			compressed_projection_snapshot = compress_projection(compressed_projection_snapshot)
 		return compressed_projection_snapshot
 	func project_changes() -> PackedByteArray: ## Update projection_changes and projection_snapshot.
-		if is_projection_update_pending: # if pending, update projection_changes and projection_snapshot.
-			is_projection_update_pending = false
+		##TODO: Optimize this function by separating intobject, flobject, link_pointer project functions.
+		var updates := {}
+		# if pending, update projection_changes and projection_snapshot.
+		if is_intobject_projection_update_pending:
+			is_intobject_projection_update_pending = false
 			var intobject_projection = intobject_pool.borrow_res()
 			intobject_pool.return_res_deffered(intobject_projection)
+			updates["intobject"] = project_intobject_changes(intobject_projection)
+		if is_link_pointer_projection_update_pending:
+			is_link_pointer_projection_update_pending = false
+			updates["link_pointer"] = project_link_pointer_changes()
+		if not updates.is_empty():
 			# Create latest projection_changes.
-			projection_changes = var_to_bytes(
-				{
-					"intobject"	:	project_intobject_changes(intobject_projection), 
-					"flobject"	:	project_flobject_changes(),
-					"link_pointer":	project_link_pointer_changes(),
-				}
-			)
+			projection_changes = var_to_bytes(updates)
 		return projection_changes
 	
 	## Set projection_update_pending and compressed_snapshot_update_pending true.
-	func queue_projection_update():
-		is_projection_update_pending = true
+	func queue_projection_update_all():
+		is_intobject_projection_update_pending = true
+		is_flobject_projection_update_pending = true
+		is_link_pointer_projection_update_pending = true
 		is_compressed_snapshot_update_pending = true
+	func queue_intobject_projection_update():
+		is_intobject_projection_update_pending = true
+		is_compressed_snapshot_update_pending = true
+	func queue_flobject_projection_update():
+		is_flobject_projection_update_pending = true
+		is_compressed_snapshot_update_pending = true
+	func queue_link_pointer_projection_update():
+		is_link_pointer_projection_update_pending = true
+		is_compressed_snapshot_update_pending = true
+	
 	
 	## intobject_projection[x][y][z] == false, means there's no changes.
 	## intobject_projection[x][y][z] == null, means the space is empty.
@@ -175,7 +211,9 @@ class chunk_item:
 					var obj = _intobject[x][y][z]
 					match obj:
 						null:
+							# if it's null, set null.
 							intobject_projection[x][y][z] = obj
+							# Update snapshot.
 							projection_snapshot[INTOBJECT][x][y][z] = obj
 						_: # don't change "_:" to "Chunk_obj:".
 							var changes: Dictionary = obj.project_changes()
@@ -183,7 +221,9 @@ class chunk_item:
 								intobject_projection[x][y][z] = false
 							else:
 								intobject_projection[x][y][z] = changes
+								# Update snapshot.
 								if projection_snapshot[INTOBJECT][x][y][z] == null:
+									# if it was empty, reset with Dictionary.
 									projection_snapshot[INTOBJECT][x][y][z] = Dictionary()
 								projection_snapshot[INTOBJECT][x][y][z].merge(changes, true) # Update projection snapshot by merging changes.
 		return intobject_projection
@@ -196,11 +236,20 @@ class chunk_item:
 				Chunk_obj:
 					flobject_projection.append(obj.project_changes())
 		return flobject_projection
-	func project_link_pointer_changes() -> Array:
-		return []
+	func project_link_pointer_changes() -> Dictionary:
+		for changed_link in link_pointer_change_set.keys():
+			var changes = link_pointer_change_set[changed_link]
+			# Update snapshot.
+			if changes == null: # if it's removed with remove_link_pointer().
+				projection_snapshot.erase(changed_link)
+			else:
+				projection_snapshot[changed_link] = changes
+		var link_pointer_projection := link_pointer_change_set.duplicate(true)
+		link_pointer_change_set.clear()
+		return link_pointer_projection # Return without modification.
 	
 	func broadcast_chunk_update() -> void: ## Called by broadcast_chunk_update_tick signal.
-		if is_projection_update_pending:
+		if is_link_pointer_projection_update_pending or is_intobject_projection_update_pending or is_flobject_projection_update_pending:
 			var changes := project_changes()
 			var compressed_changes = compress_projection(changes)
 			for observer in observers:

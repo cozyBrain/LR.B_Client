@@ -5,6 +5,8 @@ static var intobject_pool := Chunk.intobject_space_pool.new()
 var intobject: Array # intobject[x][y][z]
 var flobject: Array
 var intobject_changes: Array
+#var flobject_changes: Array
+
 #var intobject_changes_mutex := Mutex.new()
 
 var collision_activated := false
@@ -78,6 +80,7 @@ func project_changes():
 	# activate_collision() after painter.paint() if collision is activated.
 	if collision_activated:
 		call_deferred("activate_collision")
+
 
 
 func activate_collision():

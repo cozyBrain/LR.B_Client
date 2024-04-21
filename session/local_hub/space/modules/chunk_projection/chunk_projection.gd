@@ -9,6 +9,8 @@ static var chunk_size = Chunk.chunk_size ## TODO: Update
 
 var chunks: Dictionary # {pos: chunk}
 
+@onready var link_projection := %space_modules/link_projection as client_space_module_link_projection
+
 @onready var chunk_item = preload("res://session/local_hub/space/modules/chunk_projection/chunk_item.tscn")
 
 @onready var intobject_pre_allocation_tick := $intobject_pre_allocation_tick as Timer
@@ -49,11 +51,16 @@ func handle(v: Dictionary):
 					add_child(chunk)
 					chunk.rescale(chunk_size)
 				
-				chunk.intobject_changes = chunk_update["intobject"]
-				thread_project_changes.wait_to_finish()
-				thread_project_changes.start(chunk.project_changes)
+				var intobject_changes = chunk_update.get(["intobject"])
+				if intobject_changes != null:
+					chunk.intobject_changes = intobject_changes
+					thread_project_changes.wait_to_finish()
+					thread_project_changes.start(chunk.project_changes)
 				
-				
+				var link_pointer_changes = chunk_update.get(["link_pointer"])
+				if link_pointer_changes != null:
+					link_projection.project(link_pointer_changes)
+
 
 func _exit_tree():
 	thread_project_changes.wait_to_finish()
