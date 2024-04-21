@@ -51,13 +51,13 @@ func handle(v: Dictionary):
 					add_child(chunk)
 					chunk.rescale(chunk_size)
 				
-				var intobject_changes = chunk_update.get(["intobject"])
+				var intobject_changes = chunk_update.get("intobject")
 				if intobject_changes != null:
 					chunk.intobject_changes = intobject_changes
 					thread_project_changes.wait_to_finish()
 					thread_project_changes.start(chunk.project_changes)
 				
-				var link_pointer_changes = chunk_update.get(["link_pointer"])
+				var link_pointer_changes = chunk_update.get("link_pointer")
 				if link_pointer_changes != null:
 					link_projection.project(link_pointer_changes)
 

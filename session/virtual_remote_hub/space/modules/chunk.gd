@@ -168,8 +168,8 @@ class chunk_item:
 			)
 			compressed_projection_snapshot = compress_projection(compressed_projection_snapshot)
 		return compressed_projection_snapshot
-	func project_changes() -> PackedByteArray: ## Update projection_changes and projection_snapshot.
-		##TODO: Optimize this function by separating intobject, flobject, link_pointer project functions.
+	## Update projection_changes and projection_snapshot.
+	func project_changes() -> PackedByteArray: 
 		var updates := {}
 		# if pending, update projection_changes and projection_snapshot.
 		if is_intobject_projection_update_pending:
