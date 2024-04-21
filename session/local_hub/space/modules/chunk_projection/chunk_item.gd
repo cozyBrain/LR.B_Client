@@ -147,6 +147,7 @@ class obj_painter extends MultiMeshInstance3D:
 		mm.instance_count = 0
 		inst_data.clear()
 
+
 #func _ready():
 	#var mm := MultiMesh.new()
 	#mm.mesh = $test_mesh.mesh

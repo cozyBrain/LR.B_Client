@@ -23,19 +23,19 @@ func handle(v : Dictionary):
 				# Extract start&end point from the link_data.
 				var spoint = link_data[0] # start_point
 				var epoint = link_data[link_data_channel_idx-1] # end_point
-				var channel = link_data[link_data_channel_idx]
+				#var channel = link_data[link_data_channel_idx]
 				# Connect spoint node.
-				var spoint_chunk := chunk.get_chunk(chunk.global_pos_to_chunk_pos(spoint, chunk.chunk_size))
+				var spoint_chunk := chunk.get_chunk(Chunk.global_pos_to_chunk_pos(spoint, chunk.chunk_size))
 				var spoint_intobject = spoint_chunk.get_intobject(spoint)
 				spoint_intobject.connect_port(epoint, node.out_port)
 				# Connect epoint node.
-				var epoint_chunk := chunk.get_chunk(chunk.global_pos_to_chunk_pos(epoint, chunk.chunk_size))
+				var epoint_chunk := chunk.get_chunk(Chunk.global_pos_to_chunk_pos(epoint, chunk.chunk_size))
 				var epoint_intobject = epoint_chunk.get_intobject(epoint)
 				epoint_intobject.connect_port(spoint, node.in_port)
 				# minimum link data size = [(0,0,0), (5,5,5), 0] # spoint, epoint, channel
 				if link_data_size > 3:
 					# Register link pointers.
-					var lp := [spoint, epoint, channel]
+					var lp := [spoint, epoint]
 					for i in range(1, link_data_channel_idx-2):
 						var lp_pos = link_data[i]
 						var c = chunk.get_chunk(lp_pos)

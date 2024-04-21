@@ -124,7 +124,7 @@ func update_visible_range(player_position : Vector3, spawn := false):
 							%player.chunk_observer.unobserve(chunk_pos, self, false)
 							prev_invisible_chunks[chunk_pos] = null
 							free_chunk(chunk_pos) ## TODO: Consider Links. chunk_observer is for this problem.
-		
+							
 		%player.chunk_observer.flush()
 		
 		for pos in prev_invisible_chunks.keys():

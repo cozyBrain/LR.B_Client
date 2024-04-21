@@ -77,7 +77,9 @@ class chunk_item:
 		if link_pointer_save_data.is_empty():
 			projection_snapshot[LINK_POINTER] = Dictionary()
 		else:
-			projection_snapshot[LINK_POINTER] = link_pointer_save_data
+			for link_id in link_pointer_save_data.keys():
+				# save_data = {[spoint, epoint] : false}
+				insert_link_pointer(link_id)
 		
 		# Create compressed_snapshot after loading intobject & flobject.
 		is_compressed_snapshot_update_pending = true
@@ -103,7 +105,7 @@ class chunk_item:
 		save_data = {
 			"_intobject"	: intobject_save_data,
 			"_flobject"		: flobject_save_data,
-			"_link_pointer"	: _link_pointer,
+			"_link_pointer"	: _link_pointer, # _link_pointer[link_id] = false, link_id = [spoint, epoint]
 		}
 		return save_data
 	func enable_save_on_unload(enable := true):
@@ -128,11 +130,11 @@ class chunk_item:
 		return null
 	
 	func insert_link_pointer(link_pointer: Array): ##TODO: Update link_pointer_change_set
-		_link_pointer[link_pointer] = false
+		_link_pointer[link_pointer] = false # [spoint, epoint]
 		link_pointer_change_set[link_pointer] = false
 		queue_link_pointer_projection_update()
 		enable_save_on_unload()
-	func remove_link_pointer(link_pointer: Array):
+	func remove_link_pointer(link_pointer: Array, channel: int):
 		if _link_pointer.erase(link_pointer):
 			link_pointer_change_set[link_pointer] = null
 			queue_link_pointer_projection_update()
@@ -238,15 +240,15 @@ class chunk_item:
 		return flobject_projection
 	func project_link_pointer_changes() -> Dictionary:
 		for changed_link in link_pointer_change_set.keys():
-			var changes = link_pointer_change_set[changed_link]
+			var channel_changes = link_pointer_change_set[changed_link]
 			# Update snapshot.
-			if changes == null: # if it's removed with remove_link_pointer().
+			if channel_changes == null: # if it's removed with remove_link_pointer().
 				projection_snapshot.erase(changed_link)
 			else:
-				projection_snapshot[changed_link] = changes
+				projection_snapshot[changed_link] = channel_changes # can be complicated like projection_snapshot[INTOBJECT][x][y][z].merge(changes, true)
 		var link_pointer_projection := link_pointer_change_set.duplicate(true)
 		link_pointer_change_set.clear()
-		return link_pointer_projection # Return without modification.
+		return link_pointer_projection
 	
 	func broadcast_chunk_update() -> void: ## Called by broadcast_chunk_update_tick signal.
 		if is_link_pointer_projection_update_pending or is_intobject_projection_update_pending or is_flobject_projection_update_pending:

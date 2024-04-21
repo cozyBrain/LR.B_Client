@@ -92,7 +92,7 @@ func _unhandled_input(event):
 							var link_data: Array[Vector3i] = [point] # start_point
 							link_data.append_array(calculated_chunkPosForLinkPointer[0])
 							link_data.append(pos) # end_point
-							link_data.append(0) # Add channel data.
+							link_data.append(0) # Add channel data. ##TODO: deprecate channel.
 							links_to_create.append(link_data)
 						unified_chunk_observer.observe(task)
 						# Wait until the chunk is guaranteed to be accessible.

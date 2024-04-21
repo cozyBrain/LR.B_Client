@@ -208,6 +208,9 @@ script = ExtResource("10_mdjmk")
 [node name="link_projection" type="Node3D" parent="space_modules"]
 script = ExtResource("13_bpkyt")
 
+[node name="link_projection" type="Node3D" parent="space_modules/link_projection"]
+script = ExtResource("13_bpkyt")
+
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = ExtResource("2_234cb")
 
