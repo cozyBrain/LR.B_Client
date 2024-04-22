@@ -129,8 +129,8 @@ class chunk_item:
 			return _intobject[pos.x][pos.y][pos.z]
 		return null
 	
-	func insert_link_pointer(link_pointer: Array): ##TODO: Update link_pointer_change_set
-		_link_pointer[link_pointer] = false # [spoint, epoint]
+	func insert_link_pointer(link_pointer: Array):
+		_link_pointer[link_pointer] = false # _link_pointer[spoint, epoint] = false
 		link_pointer_change_set[link_pointer] = false
 		queue_link_pointer_projection_update()
 		enable_save_on_unload()

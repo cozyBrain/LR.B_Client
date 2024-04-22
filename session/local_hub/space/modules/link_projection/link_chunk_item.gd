@@ -4,6 +4,21 @@ extends MultiMeshInstance3D
 
 var links: Dictionary = {}
 
+func increment_link_observation_count(link_id: Array):
+	if links.get(link_id) == null: # New link data.
+		links[link_id] = 1
+		##TODO: Render the connection.
+		
+		
+	else: # if the link is already rendered.
+		links[link_id] += 1
+
+func erase_link(link_id: Array):
+	links.erase(link_id)
+	##TODO: Undo rendered connection.
+	
+	pass
+
 
 func project_changes():
 	# Get obj_painters to clear right after painting latest one.
