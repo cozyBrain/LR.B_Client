@@ -2,17 +2,17 @@
 ## Right click : Add start point of the link.
 ## Left click  : Connect target from the start points.
 ## 'R' press   : Reset added start points.
-class_name client_player_module_link_creator
+class_name PlayerLinkCreator
 extends Node
 
 @onready var quick_menu = %quick_menu
-@onready var pointer := $"../pointer" as client_player_module_pointer
-@onready var unified_chunk_observer = %player_modules/unified_chunk_observer as client_player_module_unified_chunk_observer
-@onready var link_projection = %space_modules/link_projection as client_space_module_link_projection
+@onready var pointer := $"../SpacePointer" as PlayerSpacePointer
+@onready var unified_chunk_observer = %player_modules/UnifiedChunkObserver as PlayerUnifiedChunkObserver
+@onready var link_projection = %space_modules/LinkProjector as SpaceLinkProjector
 @onready var console_window = %"3d_hud_projector"/console
 @onready var console = $"../console"
 
-var tool_name := &"link_creator"
+const tool_name := &"LinkCreator"
 
 # link parameters
 var start_points: Array
@@ -74,7 +74,7 @@ func _unhandled_input(event):
 						console.print_line(["No start points selected."])
 					else:
 						# Create task to observe target_chunk.
-						var task := client_player_module_unified_chunk_observer.observing_task.new()
+						var task := PlayerUnifiedChunkObserver.observing_task.new()
 						# Register the task to clear the task later.
 						requested_tasks[task] = true
 						var links_to_create := []
@@ -148,13 +148,13 @@ static func align_link(A: Vector3, B: Vector3, link: Object) -> Object:
 static func calculateChunkPosForLinkPointer(start_point: Vector3, end_point: Vector3, distance_threshold) -> Array:
 	var distance = start_point.distance_to(end_point)
 	var link_pointer_count = max(2, int(distance / distance_threshold))
-	var start_point_chunk := Chunk.global_pos_to_chunk_pos(start_point, client_space_module_chunk_projection.chunk_size)
-	var end_point_chunk := Chunk.global_pos_to_chunk_pos(end_point, client_space_module_chunk_projection.chunk_size)
+	var start_point_chunk := R_SpaceChunk.global_pos_to_chunk_pos(start_point, SpaceChunkProjector.chunk_size)
+	var end_point_chunk := R_SpaceChunk.global_pos_to_chunk_pos(end_point, SpaceChunkProjector.chunk_size)
 	var chunk_pos_list: Array[Vector3i] = []
 	
 	for i in range(1, link_pointer_count):
 		var t = float(i) / (link_pointer_count - 1)
-		var link_pointer_chunk_pos = Chunk.global_pos_to_chunk_pos(start_point.lerp(end_point, t), client_space_module_chunk_projection.chunk_size)
+		var link_pointer_chunk_pos = R_SpaceChunk.global_pos_to_chunk_pos(start_point.lerp(end_point, t), SpaceChunkProjector.chunk_size)
 		# Exclude start_point_chunk and end_point_chunk position.
 		if link_pointer_chunk_pos == start_point_chunk or link_pointer_chunk_pos == end_point_chunk:
 			continue

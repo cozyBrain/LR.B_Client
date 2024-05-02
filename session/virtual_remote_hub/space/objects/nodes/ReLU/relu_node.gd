@@ -1,5 +1,5 @@
 class_name N_ReLU
-extends Chunk_obj
+extends R_SpaceChunk_obj
 
 const id := &"ReLU"
 static var id_hashed: int = id.hash()

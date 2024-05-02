@@ -1,17 +1,17 @@
-class_name client_space_module_chunk_projection
+class_name SpaceChunkProjector
 extends Node3D
 
 const CHUNK_LAYER = 0b00000000_00000000_00000000_00000010 ## collision_layer and mask for chunk detection.
 
-const module_name = &"chunk_projection"
+const module_name = &"ChunkProjector"
 
-static var chunk_size = Chunk.chunk_size ## TODO: Update
+static var chunk_size = R_SpaceChunk.chunk_size ## TODO: Update
 
 var chunks: Dictionary # {pos: chunk}
 
-@onready var link_projection := %space_modules/link_projection as client_space_module_link_projection
+@onready var link_projection := %space_modules/LinkProjector as SpaceLinkProjector
 
-@onready var chunk_item = preload("res://session/local_hub/space/modules/chunk_projection/chunk_item.tscn")
+@onready var chunk_item = preload("res://session/local_hub/space/modules/ChunkProjector/ChunkProjectorChunkItem.tscn")
 
 @onready var intobject_pre_allocation_tick := $intobject_pre_allocation_tick as Timer
 var intobject_pre_allocation_tick_interval := 0.05 # in seconds
@@ -23,13 +23,13 @@ func _init():
 	invisible_chunk_radius = visible_chunk_radius + 2
 
 func _ready():
-	# Setup intobject_pool of proj_chunk_item.
-	proj_chunk_item.intobject_pool.intobject_space_sample = Chunk.build_intobject_sample(chunk_size)
-	proj_chunk_item.intobject_pool.max_pre_allocation = 600
-	proj_chunk_item.intobject_pool.max_allocation_per_call = 30
-	proj_chunk_item.intobject_pool.fully_pre_allocate()
+	# Setup intobject_pool of ChunkProjectorChunkItem.
+	ChunkProjectorChunkItem.intobject_pool.intobject_space_sample = R_SpaceChunk.build_intobject_sample(chunk_size)
+	ChunkProjectorChunkItem.intobject_pool.max_pre_allocation = 600
+	ChunkProjectorChunkItem.intobject_pool.max_allocation_per_call = 30
+	ChunkProjectorChunkItem.intobject_pool.fully_pre_allocate()
 	intobject_pre_allocation_tick.start(intobject_pre_allocation_tick_interval)
-	intobject_pre_allocation_tick.timeout.connect(proj_chunk_item.intobject_pool.pre_allocate)
+	intobject_pre_allocation_tick.timeout.connect(ChunkProjectorChunkItem.intobject_pool.pre_allocate)
 
 
 func handle(v: Dictionary):   
@@ -42,7 +42,7 @@ func handle(v: Dictionary):
 				chunk_update = bytes_to_var(v.get("chunk"))
 				if chunk_update == null:
 					return
-				var chunk = chunks.get(chunk_pos) as proj_chunk_item
+				var chunk = chunks.get(chunk_pos) as ChunkProjectorChunkItem
 				if chunk == null:
 					chunk = chunk_item.instantiate()
 					chunks[chunk_pos] = chunk
@@ -66,7 +66,7 @@ func _exit_tree():
 	thread_project_changes.wait_to_finish()
 
 func free_chunk(chunk_pos: Vector3i):
-	var chunk = chunks.get(chunk_pos) as proj_chunk_item
+	var chunk = chunks.get(chunk_pos) as ChunkProjectorChunkItem
 	if chunk != null:
 		chunk.return_res()
 		remove_child(chunk)
@@ -74,13 +74,13 @@ func free_chunk(chunk_pos: Vector3i):
 
 func _on_chunks_detector_detected(area):
 	var detected_area_pos = Vector3i(area.get_node("..").position / chunk_size)
-	var detected_area: proj_chunk_item = chunks.get(detected_area_pos)
+	var detected_area: ChunkProjectorChunkItem = chunks.get(detected_area_pos)
 	# activate collision
 	detected_area.activate_collision()
 
 func _on_chunks_detector_detected_exit(area):
 	var detected_area_pos = Vector3i(area.get_node("..").position / chunk_size)
-	var detected_area: proj_chunk_item = chunks.get(detected_area_pos)
+	var detected_area: ChunkProjectorChunkItem = chunks.get(detected_area_pos)
 	# deactivate collision
 	detected_area.deactivate_collision()
 
@@ -104,7 +104,7 @@ var previous_invisible_chunks : Dictionary # {pos...}
 
 
 func update_visible_range(player_position : Vector3, spawn := false):
-	current_chunk_pos = Chunk.global_pos_to_chunk_pos(player_position, chunk_size)
+	current_chunk_pos = R_SpaceChunk.global_pos_to_chunk_pos(player_position, chunk_size)
 	# if player migrate.
 	if current_chunk_pos != previous_chunk_pos or spawn: # force update if spawn is true
 		var boundary := invisible_chunk_radius+safe_margin
@@ -132,6 +132,7 @@ func update_visible_range(player_position : Vector3, spawn := false):
 			previous_visible_chunks.erase(pos)
 		
 		print("current_chunk_pos: ", current_chunk_pos)
+		#<DEPRECATED>
 		#print(
 			#"current_chunk_pos: ", current_chunk_pos,\
 			#"  loaded_chunks: ", space_module_chunk.get_total_loaded_chunks(),\

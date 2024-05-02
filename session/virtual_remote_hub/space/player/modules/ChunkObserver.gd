@@ -1,6 +1,6 @@
 extends Node
 
-@onready var space_module_chunk := %space_modules/chunk as Chunk
+@onready var space_module_chunk := %space_modules/Chunk as R_SpaceChunk
 
 
 func handle(v : Dictionary):
@@ -13,7 +13,7 @@ func handle(v : Dictionary):
 				space_module_chunk.queue_observe_or_unobserve(req[0], req[1], observer)
 
 
-#func _on_chunk_observed(chunk: Chunk.chunk_item):
+#func _on_chunk_observed(chunk: R_SpaceChunk.ChunkItem):
 	#var chunk_pos: Vector3i = chunk.chunk_pos
 	#terminal.handle(
 		#{
@@ -28,7 +28,7 @@ func handle(v : Dictionary):
 		#}
 	#)
 # Update observed chunk.
-#func _on_chunk_changes_observed(chunk: Chunk.chunk_item, changes: PackedByteArray):
+#func _on_chunk_changes_observed(chunk: R_SpaceChunk.ChunkItem, changes: PackedByteArray):
 	#var chunk_pos: Vector3i = chunk.chunk_pos
 	#terminal.handle(
 		#{

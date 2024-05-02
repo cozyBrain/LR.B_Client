@@ -1,7 +1,9 @@
-class_name client_player_module_chunk_observer
+class_name PlayerChunkObserver
 extends Node
 
 ## Observers must have module_name(String or StringName).
+
+const module_name = &"ChunkObserver"
 
 var observation_map: Dictionary ## {chunk_pos: observers} observers is Dictionary.
 var observation_request: Dictionary ## {"observer1": [[observe,pos],[unobserve,pos]], "observer2": [[observe,pos],...]}
@@ -23,22 +25,22 @@ func observe(chunk_pos: Vector3i, observer, accumulable: bool = true):
 			if accumulable: 
 				# New <observer, accumulation>
 				observation_map[chunk_pos][observer] = 1
-				enqueue_new_request(observer, Chunk.Observe, chunk_pos)
+				enqueue_new_request(observer, R_SpaceChunk.Observe, chunk_pos)
 				return
 			# New <observer>
 			observation_map[chunk_pos][observer] = true
 			# Enqueue new request.
-			enqueue_new_request(observer, Chunk.Observe, chunk_pos)
+			enqueue_new_request(observer, R_SpaceChunk.Observe, chunk_pos)
 	else: 
 		# When observer observes new chunk.
 		if accumulable: 
 			# New <chunk, observer, accumulation>
 			observation_map[chunk_pos] = {observer: 1}
-			enqueue_new_request(observer, Chunk.Observe, chunk_pos)
+			enqueue_new_request(observer, R_SpaceChunk.Observe, chunk_pos)
 			return
 		# New <chunk, observer>
 		observation_map[chunk_pos] = {observer: true}
-		enqueue_new_request(observer, Chunk.Observe, chunk_pos)
+		enqueue_new_request(observer, R_SpaceChunk.Observe, chunk_pos)
 
 ## If you unobserve(accumulable=false) chunk that is being observed with accumulation, the chunk will be unobserved at once.
 func unobserve(chunk_pos: Vector3i, observer, accumulable: bool = true):
@@ -63,7 +65,7 @@ func unobserve(chunk_pos: Vector3i, observer, accumulable: bool = true):
 		if observation_map[chunk_pos].is_empty(): # if there's no observer, unobserve the chunk.
 			# Unobserve.
 			observation_map.erase(chunk_pos)
-			enqueue_new_request(observer, Chunk.Unobserve, chunk_pos)
+			enqueue_new_request(observer, R_SpaceChunk.Unobserve, chunk_pos)
 
 
 func enqueue_new_request(observer, observation: int, chunk_pos: Vector3i):
@@ -80,7 +82,7 @@ func flush():
 			{
 				"Hub" : terminal.virtual_remote_hub,
 				"ModuleContainer" : "Player",
-				"Module" : "chunk_observer",
+				"Module" : module_name,
 				"Content" : {
 					"Request": 	"observe",
 					"observing_module": observer,

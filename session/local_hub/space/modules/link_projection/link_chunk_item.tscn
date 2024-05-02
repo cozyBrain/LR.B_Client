@@ -1,6 +1,0 @@
-[gd_scene load_steps=2 format=3 uid="uid://03nm0aftioc2"]
-
-[ext_resource type="Script" path="res://session/local_hub/space/modules/link_projection/link_chunk_item.gd" id="1_563fj"]
-
-[node name="link_chunk_item" type="MultiMeshInstance3D"]
-script = ExtResource("1_563fj")

@@ -12,7 +12,7 @@ func _ready():
 
 func reset_current_space_dir_location():
 	current_space_dir_location = spaces_dir_location
-	chunk_dir_location = "/chunk"
+	chunk_dir_location = "/Chunk"
 	player_dir_location = "/player"
 
 
@@ -23,14 +23,14 @@ func update_space_location(space_name : String):
 	player_dir_location = current_space_dir_location + player_dir_location
 
 #region chunk
-func load_chunk(pos : Vector3i) -> Chunk.chunk_item:
+func load_chunk(pos : Vector3i) -> R_SpaceChunk.ChunkItem:
 	var f = FileAccess.open_compressed(chunk_dir_location+'/'+stringify_chunk_pos(pos), FileAccess.READ, FileAccess.COMPRESSION_ZSTD)
 	if f == null:
 		return null
 	var data = f.get_var(false)
-	return Chunk.chunk_item.new().load_save_data(data)
+	return R_SpaceChunk.ChunkItem.new().load_save_data(data)
 
-func save_chunk(chunk : Chunk.chunk_item, pos : Vector3i):
+func save_chunk(chunk : R_SpaceChunk.ChunkItem, pos : Vector3i):
 	var f = FileAccess.open_compressed(chunk_dir_location+'/'+stringify_chunk_pos(pos), FileAccess.WRITE, FileAccess.COMPRESSION_ZSTD)
 	if f == null:
 		printerr("failed to save chunk, position: ", pos, " ",error_string(FileAccess.get_open_error()))

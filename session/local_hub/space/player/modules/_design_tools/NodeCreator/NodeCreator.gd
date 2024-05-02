@@ -1,15 +1,16 @@
+class_name NodeCreator
 extends Node
 
 @onready var quick_menu = %quick_menu
-@onready var pointer := $"../pointer" as client_player_module_pointer
-@onready var unified_chunk_observer = %player_modules/unified_chunk_observer as client_player_module_unified_chunk_observer
+@onready var pointer := $"../SpacePointer" as PlayerSpacePointer
+@onready var unified_chunk_observer = %player_modules/UnifiedChunkObserver as PlayerUnifiedChunkObserver
 @onready var console_window = %"3d_hud_projector"/console
 
 
 var node_selection_button := MenuButton.new()
 var node_selection: String = ""
 
-var tool_name := &"node_creator"
+const tool_name := &"NodeCreator"
 
 var requested_tasks: Dictionary
 
@@ -78,11 +79,11 @@ func _unhandled_input(event):
 	if event is InputEventMouseButton:
 		if event.is_pressed():
 			var pos = pointer.get_pointer_position()
-			var chunk_pos_to_observe: Vector3i = Chunk.global_pos_to_chunk_pos(pos, client_space_module_chunk_projection.chunk_size) ##TODO: Update.
+			var chunk_pos_to_observe: Vector3i = R_SpaceChunk.global_pos_to_chunk_pos(pos, SpaceChunkProjector.chunk_size) ##TODO: Update.
 			if typeof(pos) == TYPE_VECTOR3I:
 				if event.button_index == MOUSE_BUTTON_LEFT and pointer.current_mode == pointer.Mode.VoxelPointer and not node_selection == "":
 					# Create task to observe target_chunk.
-					var task := client_player_module_unified_chunk_observer.observing_task.new()
+					var task := PlayerUnifiedChunkObserver.observing_task.new()
 					# Register the task to clear the task later.
 					requested_tasks[task] = true
 					task.add_chunk_to_observe([chunk_pos_to_observe])

@@ -1,19 +1,19 @@
 [gd_scene load_steps=20 format=3 uid="uid://cmkkec0mugg7y"]
 
-[ext_resource type="Script" path="res://session/local_hub/space/player/player.gd" id="1_b5vu3"]
+[ext_resource type="Script" path="res://session/local_hub/space/player/Player.gd" id="1_k4fub"]
 [ext_resource type="Environment" uid="uid://cvugm5xmaatil" path="res://session/local_hub/space/space_projection_world_environment.tres" id="2_234cb"]
 [ext_resource type="Script" path="res://session/local_hub/space/player/3d_hud/3d_hud_projector.gd" id="3_dmfoi"]
 [ext_resource type="PackedScene" uid="uid://blogxlkgokqjm" path="res://session/local_hub/space/player/3d_hud/hud_console/console.tscn" id="4_f756s"]
 [ext_resource type="Script" path="res://session/local_hub/space/player/2d_hud/quick_menu/quick_menu.gd" id="5_45j60"]
-[ext_resource type="Script" path="res://session/local_hub/space/player/modules/pointer/pointer.gd" id="6_4tbiy"]
+[ext_resource type="Script" path="res://session/local_hub/space/player/modules/PlayerMotionSync/PlayerMotionSync.gd" id="6_sp03w"]
 [ext_resource type="Script" path="res://session/local_hub/space/player/modules/console/console.gd" id="7_2lkmj"]
-[ext_resource type="Script" path="res://session/local_hub/space/player/modules/player_motion_sync/player_motion_sync.gd" id="8_doyc6"]
-[ext_resource type="Script" path="res://session/local_hub/space/player/modules/chunk_observer/chunk_observer.gd" id="9_bc0rt"]
-[ext_resource type="Script" path="res://session/local_hub/space/player/modules/_design_tools/node_creator/node_creator.gd" id="9_kq4ux"]
-[ext_resource type="Script" path="res://session/local_hub/space/player/modules/unified_chunk_observer/unified_chunk_observer.gd" id="10_ip36i"]
-[ext_resource type="Script" path="res://session/local_hub/space/modules/chunk_projection/chunk_projection.gd" id="10_mdjmk"]
-[ext_resource type="Script" path="res://session/local_hub/space/player/modules/_design_tools/link_creator/link_creator.gd" id="11_f0q3g"]
-[ext_resource type="Script" path="res://session/local_hub/space/modules/link_projection/link_projection.gd" id="13_bpkyt"]
+[ext_resource type="Script" path="res://session/local_hub/space/player/modules/SpacePointer/SpacePointer.gd" id="7_jcmdt"]
+[ext_resource type="Script" path="res://session/local_hub/space/player/modules/_design_tools/NodeCreator/NodeCreator.gd" id="8_dmd1e"]
+[ext_resource type="Script" path="res://session/local_hub/space/player/modules/ChunkObserver/ChunkObserver.gd" id="9_7dd8l"]
+[ext_resource type="Script" path="res://session/local_hub/space/player/modules/UnifiedChunkObserver/UnifiedChunkObserver.gd" id="10_myufc"]
+[ext_resource type="Script" path="res://session/local_hub/space/player/modules/_design_tools/LinkCreator/LinkCreator.gd" id="11_4p1cj"]
+[ext_resource type="Script" path="res://session/local_hub/space/modules/ChunkProjector/ChunkProjector.gd" id="12_3i0ei"]
+[ext_resource type="Script" path="res://session/local_hub/space/modules/LinkProjector/LinkProjector.gd" id="13_cmjsv"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_ocn5h"]
 
@@ -49,7 +49,7 @@ skeleton = NodePath("../..")
 [node name="player" type="CharacterBody3D" parent="."]
 unique_name_in_owner = true
 transform = Transform3D(1.31134e-07, 0, -1, 0, 1, 0, 1, 0, 1.31134e-07, 0, 0, 0)
-script = ExtResource("1_b5vu3")
+script = ExtResource("1_k4fub")
 metadata/_edit_lock_ = true
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="player"]
@@ -179,37 +179,34 @@ unique_name_in_owner = true
 [node name="console" type="Node" parent="player/player_modules"]
 script = ExtResource("7_2lkmj")
 
-[node name="player_motion_sync" type="Node" parent="player/player_modules"]
-script = ExtResource("8_doyc6")
+[node name="PlayerMotionSync" type="Node" parent="player/player_modules"]
+script = ExtResource("6_sp03w")
 
-[node name="pointer" type="Node" parent="player/player_modules"]
-script = ExtResource("6_4tbiy")
+[node name="SpacePointer" type="Node" parent="player/player_modules"]
+script = ExtResource("7_jcmdt")
 
-[node name="node_creator" type="Node" parent="player/player_modules"]
-script = ExtResource("9_kq4ux")
+[node name="NodeCreator" type="Node" parent="player/player_modules"]
+script = ExtResource("8_dmd1e")
 
-[node name="chunk_observer" type="Node" parent="player/player_modules"]
-script = ExtResource("9_bc0rt")
+[node name="ChunkObserver" type="Node" parent="player/player_modules"]
+script = ExtResource("9_7dd8l")
 
-[node name="unified_chunk_observer" type="Node" parent="player/player_modules"]
-script = ExtResource("10_ip36i")
+[node name="UnifiedChunkObserver" type="Node" parent="player/player_modules"]
+script = ExtResource("10_myufc")
 
-[node name="link_creator" type="Node" parent="player/player_modules"]
-script = ExtResource("11_f0q3g")
+[node name="LinkCreator" type="Node" parent="player/player_modules"]
+script = ExtResource("11_4p1cj")
 
 [node name="space_modules" type="Node3D" parent="."]
 unique_name_in_owner = true
 
-[node name="chunk_projection" type="Node3D" parent="space_modules"]
-script = ExtResource("10_mdjmk")
+[node name="ChunkProjector" type="Node3D" parent="space_modules"]
+script = ExtResource("12_3i0ei")
 
-[node name="intobject_pre_allocation_tick" type="Timer" parent="space_modules/chunk_projection"]
+[node name="intobject_pre_allocation_tick" type="Timer" parent="space_modules/ChunkProjector"]
 
-[node name="link_projection" type="Node3D" parent="space_modules"]
-script = ExtResource("13_bpkyt")
-
-[node name="link_projection" type="Node3D" parent="space_modules/link_projection"]
-script = ExtResource("13_bpkyt")
+[node name="LinkProjector" type="Node3D" parent="space_modules"]
+script = ExtResource("13_cmjsv")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = ExtResource("2_234cb")
@@ -222,7 +219,7 @@ light_angular_distance = 57.77
 directional_shadow_mode = 1
 sky_mode = 1
 
-[node name="DirectionalLight3D2" type="DirectionalLight3D" parent="WorldEnvironment"]
+[node name="AnotherDirectionalLight3D" type="DirectionalLight3D" parent="WorldEnvironment"]
 transform = Transform3D(0.172781, 0.729464, -0.661838, 0.83286, -0.466921, -0.297202, -0.525824, -0.499868, -0.688216, 4.30052, 3.89552, 0)
 light_color = Color(0.12549, 0.12549, 0.12549, 1)
 light_energy = 0.1
@@ -230,8 +227,8 @@ light_angular_distance = 57.77
 directional_shadow_mode = 1
 sky_mode = 1
 
-[connection signal="head_moved" from="player" to="player/player_modules/pointer" method="_on_player_head_moved"]
-[connection signal="area_entered" from="player/head/laser_pointer/chunks_detector/Area3D" to="space_modules/chunk_projection" method="_on_chunks_detector_detected"]
-[connection signal="area_exited" from="player/head/laser_pointer/chunks_detector/Area3D" to="space_modules/chunk_projection" method="_on_chunks_detector_detected_exit"]
+[connection signal="head_moved" from="player" to="player/player_modules/SpacePointer" method="_on_player_head_moved"]
+[connection signal="area_entered" from="player/head/laser_pointer/chunks_detector/Area3D" to="space_modules/ChunkProjector" method="_on_chunks_detector_detected"]
+[connection signal="area_exited" from="player/head/laser_pointer/chunks_detector/Area3D" to="space_modules/ChunkProjector" method="_on_chunks_detector_detected_exit"]
 [connection signal="typing_stopped" from="player/head/hud/viewport_container_for_3d_hud/SubViewport/3d_hud_projector/console" to="player" method="_on_console_typing_stopped"]
 [connection signal="pressed" from="player/head/hud/2d_hud/quick_menu/sub/go_back_to_main" to="player/head/hud/2d_hud/quick_menu" method="_on_go_back_to_main_pressed"]

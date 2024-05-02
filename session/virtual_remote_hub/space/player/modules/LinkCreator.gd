@@ -1,8 +1,8 @@
 extends Node
 
-@onready var chunk = %space_modules/chunk as Chunk
+@onready var chunk = %space_modules/Chunk as R_SpaceChunk
 
-var tool_name := &"link_creator"
+const tool_name := &"LinkCreator"
 
 func handle(v : Dictionary):
 	var request := StringName(v.get("Request"))
@@ -25,11 +25,11 @@ func handle(v : Dictionary):
 				var epoint = link_data[link_data_channel_idx-1] # end_point
 				#var channel = link_data[link_data_channel_idx]
 				# Connect spoint node.
-				var spoint_chunk := chunk.get_chunk(Chunk.global_pos_to_chunk_pos(spoint, chunk.chunk_size))
+				var spoint_chunk := chunk.get_chunk(R_SpaceChunk.global_pos_to_chunk_pos(spoint, chunk.chunk_size))
 				var spoint_intobject = spoint_chunk.get_intobject(spoint)
 				spoint_intobject.connect_port(epoint, node.out_port)
 				# Connect epoint node.
-				var epoint_chunk := chunk.get_chunk(Chunk.global_pos_to_chunk_pos(epoint, chunk.chunk_size))
+				var epoint_chunk := chunk.get_chunk(R_SpaceChunk.global_pos_to_chunk_pos(epoint, chunk.chunk_size))
 				var epoint_intobject = epoint_chunk.get_intobject(epoint)
 				epoint_intobject.connect_port(spoint, node.in_port)
 				# minimum link data size = [(0,0,0), (5,5,5), 0] # spoint, epoint, channel

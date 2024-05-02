@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://dgeqavalxkiof"]
 
-[ext_resource type="Script" path="res://session/local_hub/space/modules/chunk_projection/chunk_item.gd" id="1_l4fyl"]
+[ext_resource type="Script" path="res://session/local_hub/space/modules/ChunkProjector/ChunkProjectorChunkItem.gd" id="1_n013i"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_cole7"]
 
@@ -15,7 +15,7 @@ emission_energy_multiplier = 2.21
 material = SubResource("StandardMaterial3D_smens")
 
 [node name="chunk_item" type="Node3D"]
-script = ExtResource("1_l4fyl")
+script = ExtResource("1_n013i")
 
 [node name="Area3D" type="Area3D" parent="."]
 collision_layer = 2

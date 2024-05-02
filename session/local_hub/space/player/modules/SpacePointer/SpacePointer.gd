@@ -1,11 +1,11 @@
-class_name client_player_module_pointer
+class_name PlayerSpacePointer
 extends Node
 
-const tool_name := &"pointer"
+const tool_name := &"SpacePointer"
 
 @onready var player_head = %player/head
 @onready var laser_pointer : RayCast3D = %player/head/laser_pointer
-@onready var voxel_pointer = preload("res://session/local_hub/space/player/modules/pointer/voxel_pointer.tscn").instantiate()
+@onready var voxel_pointer = preload("res://session/local_hub/space/player/modules/SpacePointer/voxel_pointer.tscn").instantiate()
 @onready var console_window = %"3d_hud_projector"/console
 
 @onready var console = $"../console"

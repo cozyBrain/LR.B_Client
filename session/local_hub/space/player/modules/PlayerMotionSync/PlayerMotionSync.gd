@@ -1,6 +1,7 @@
+class_name PlayerMotionSync
 extends Node
 
-
+const module_name := &"PlayerMotionSync"
 
 func handle(v : Dictionary):
 	# sync head rotation

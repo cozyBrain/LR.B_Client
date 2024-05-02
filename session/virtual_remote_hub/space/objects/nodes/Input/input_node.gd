@@ -1,5 +1,5 @@
 class_name N_Input
-extends Chunk_obj
+extends R_SpaceChunk_obj
 
 const id := &"Input"
 static var id_hashed: int = id.hash()

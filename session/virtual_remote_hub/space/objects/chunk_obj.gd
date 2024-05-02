@@ -1,8 +1,8 @@
-class_name Chunk_obj
+class_name R_SpaceChunk_obj
 extends RefCounted
 
-static var chunk_space: Chunk ## Can be used after Chunk.init(). 
-var parent_chunk: Chunk.chunk_item
+static var chunk_space: R_SpaceChunk ## Can be used after R_SpaceChunk.init(). 
+var parent_chunk: R_SpaceChunk.ChunkItem
 
 var change_set: Dictionary
 var queue_projection_update: Callable
@@ -23,6 +23,6 @@ func project_changes() -> Dictionary:
 	clear_change_set()
 	return changes
 
-func create(id_hashed: int) -> Chunk_obj: # called when this obj is created.
+func create(id_hashed: int) -> R_SpaceChunk_obj: # called when this obj is created.
 	add_initial_change("id", id_hashed)
 	return self

@@ -1,4 +1,4 @@
-class_name client_player_module_unified_chunk_observer
+class_name PlayerUnifiedChunkObserver
 extends Node
 
 ## * If a player wants to use node_creator to create an obj in a chunk,
@@ -12,12 +12,12 @@ extends Node
 ## this may cause unexpected situation. In most cases, the operation is going to be ignored as remote_server.Chunk.get_chunk() will return null.
 
 
-const module_name = &"unified_chunk_observer"
+const module_name = &"UnifiedChunkObserver"
 
 var observing_chunks: Dictionary
 var tasks: Dictionary
 
-@onready var chunk_observer = %player_modules/chunk_observer as client_player_module_chunk_observer
+@onready var chunk_observer = %player_modules/ChunkObserver as PlayerChunkObserver
 
 ## When this module(observer) unobserve a chunk, chunk_observer call this function.
 func _on_chunk_unobserved(pos: Vector3i):

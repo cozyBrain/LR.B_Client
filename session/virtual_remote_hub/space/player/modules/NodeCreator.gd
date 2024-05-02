@@ -1,8 +1,8 @@
 extends Node
 
-@onready var space_module_chunk = %space_modules/chunk as Chunk
+@onready var space_module_chunk = %space_modules/Chunk as R_SpaceChunk
 
-var tool_name := &"node_creator"
+const tool_name := &"NodeCreator"
 
 func handle(v : Dictionary):
 	var request := StringName(v.get("Request"))

@@ -3,7 +3,7 @@ extends Node
 var id := "offline_player"
 
 @onready var player = %offline_player
-@onready var space_module_chunk = %space_modules/chunk as Chunk
+@onready var space_module_chunk = %space_modules/Chunk as R_SpaceChunk
 
 @onready var save_data := {
 	String(get_path()) : {"id" : ""},

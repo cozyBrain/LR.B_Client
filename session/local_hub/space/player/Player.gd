@@ -1,12 +1,14 @@
-class_name client_player
+class_name Player
 extends CharacterBody3D
 
 
 @onready var head = $head
 @onready var _3d_hud = %"3d_hud_projector"
 @onready var console = _3d_hud.get_node("console")
-@onready var chunk_projection = %space_modules/chunk_projection as client_space_module_chunk_projection
-@onready var chunk_observer = %player_modules/chunk_observer as client_player_module_chunk_observer
+@onready var chunk_projection = %space_modules/ChunkProjector as SpaceChunkProjector
+@onready var chunk_observer = %player_modules/ChunkObserver as PlayerChunkObserver
+
+const module_name := &"Player"
 
 var speed : float = speed_default
 var speed_default : float = 5
@@ -38,7 +40,7 @@ func _ready():
 		{
 			"Hub" : terminal.virtual_remote_hub,
 			"ModuleContainer" : "Player",
-			"Module" : "player_motion_sync",
+			"Module" : PlayerMotionSync_R.module_name,
 			"Content" : {
 				"Request" : "spawn",
 				"ID" : "offline_player"
@@ -102,8 +104,8 @@ func _unhandled_input(event):
 		terminal.handle(
 			{
 				"Hub" : terminal.virtual_remote_hub,
-				"ModuleContainer" : "Player",
-				"Module" : "player",
+				"ModuleContainer" : Player.module_name,
+				"Module" : module_name,
 				"Content" : {
 					"Request" : "exit_session",
 				}
@@ -130,7 +132,7 @@ func sync_position_and_head_rotation():
 		var sync_data := {
 				"Hub" : terminal.virtual_remote_hub,
 				"ModuleContainer" : "Player",
-				"Module" : "player_motion_sync",
+				"Module" : PlayerMotionSync.module_name,
 				"Content" : {
 					"sync_position" : [position.x,position.y,position.z], 
 					"sync_head_rotation" : [current_head_rotation.x, current_head_rotation.y]

@@ -1,7 +1,7 @@
-class_name Chunk
+class_name R_SpaceChunk
 extends Node
-## Client side chunks are updated by handle_observation_queue() and chunk_item.broadcast_chunk_update().
-## Obj(intobject&flobject) in chunk can call the chunk_item's function. usually they call enable_save_on_unload(), queue_projection_update().
+## Client side chunks are updated by handle_observation_queue() and ChunkItem.broadcast_chunk_update().
+## Obj(intobject&flobject) in chunk can call the ChunkItem's function. usually they call enable_save_on_unload(), queue_projection_update().
 ## also they can use Chunk(this script) functions.
 
 
@@ -10,11 +10,11 @@ var number_of_partitions := 2
 var partition: Array[Dictionary] # [dict{chunks...}, dict{chunks...}...]
 
 
-class chunk_item:
+class ChunkItem:
 	enum {INTOBJECT, FLOBJECT, LINK_POINTER, OBJ_TYPES}
 	static var intobject_pool: intobject_space_pool
 	static var broadcast_chunk_update_tick: Timer ## Connected to self.broadcast_chunk_update() when there's observer.
-	var chunk_pos: Vector3i ## Set by Chunk.set_chunk(pos, new_chunk).
+	var chunk_pos: Vector3i ## Set by R_SpaceChunk.set_chunk(pos, new_chunk).
 	var _intobject: Array # [][][] 3D
 	var _flobject: Array  ## about to be octree
 	var _link_pointer: Dictionary ## link_pointer[start, end, channel]
@@ -55,7 +55,7 @@ class chunk_item:
 		# Disconnect signals
 		if broadcast_chunk_update_tick.timeout.is_connected(broadcast_chunk_update):
 			broadcast_chunk_update_tick.timeout.disconnect(broadcast_chunk_update)
-	func load_save_data(data: Dictionary) -> chunk_item: ## TODO: _flobject loading
+	func load_save_data(data: Dictionary) -> ChunkItem: ## TODO: _flobject loading
 		# Load intobject.
 		_intobject = intobject_pool.borrow_res()
 		var intobject_snapshot = intobject_pool.borrow_res()
@@ -66,7 +66,7 @@ class chunk_item:
 					var obj_save_data = intobject_save_data[x][y][z]
 					if obj_save_data != null:
 						var obj_id = obj_save_data.get("id")
-						var obj: Chunk_obj = node.scripts[obj_id].new().load_save_data(obj_save_data)
+						var obj: R_SpaceChunk_obj = node.scripts[obj_id].new().load_save_data(obj_save_data)
 						insert_intobject(Vector3i(x,y,z), obj, true)
 						intobject_snapshot[x][y][z] = obj.project_changes()
 		projection_snapshot[INTOBJECT] = intobject_snapshot
@@ -235,7 +235,7 @@ class chunk_item:
 			match obj:
 				null:
 					pass
-				Chunk_obj:
+				R_SpaceChunk_obj:
 					flobject_projection.append(obj.project_changes())
 		return flobject_projection
 	func project_link_pointer_changes() -> Dictionary:
@@ -305,19 +305,19 @@ class intobject_space_pool:
 
 # consider batch processing for get&insert_intobject().
 #func get_intobject(global_pos: Vector3i) -> bool:
-	#var chunk_pos := Chunk.global_pos_to_chunk_pos(global_pos, chunk_size)
+	#var chunk_pos := R_SpaceChunk.global_pos_to_chunk_pos(global_pos, chunk_size)
 	#var chunk = get_chunk(chunk_pos)
 	#if chunk != null:
-		#return chunk.get_intobject(Chunk.global_pos_to_local_intobject_pos(global_pos, chunk_size))
+		#return chunk.get_intobject(R_SpaceChunk.global_pos_to_local_intobject_pos(global_pos, chunk_size))
 	#prints("get_intobject ignored! failed to get chunk:", chunk_pos)
 	#return false
 
 ## Return true if the intobject inserted.
 func insert_intobject(global_pos: Vector3i, obj) -> bool:
-	var chunk_pos := Chunk.global_pos_to_chunk_pos(global_pos, chunk_size)
+	var chunk_pos := R_SpaceChunk.global_pos_to_chunk_pos(global_pos, chunk_size)
 	var chunk = get_chunk(chunk_pos)
 	if chunk != null:
-		return chunk.insert_intobject(Chunk.global_pos_to_local_intobject_pos(global_pos, chunk_size), obj)
+		return chunk.insert_intobject(R_SpaceChunk.global_pos_to_local_intobject_pos(global_pos, chunk_size), obj)
 	prints("insert_intobject ignored! failed to get chunk:", chunk_pos)
 	return false
 
@@ -380,17 +380,17 @@ func init():
 	for i in number_of_partitions:
 		partition.append({})
 	
-	# Setup chunk_item's static variables.
+	# Setup ChunkItem's static variables.
 	# Setup intobject_space_pool.
 	var pool := intobject_space_pool.new()
-	pool.intobject_space_sample = Chunk.build_intobject_sample(chunk_size)
+	pool.intobject_space_sample = R_SpaceChunk.build_intobject_sample(chunk_size)
 	pool.max_pre_allocation = 1500
 	pool.max_allocation_per_call = 40
 	pool.fully_pre_allocate()
-	chunk_item.intobject_pool = pool
-	chunk_item.broadcast_chunk_update_tick = broadcast_chunk_update_tick
+	ChunkItem.intobject_pool = pool
+	ChunkItem.broadcast_chunk_update_tick = broadcast_chunk_update_tick
 	# Setup Chunk_obj's static variables.
-	Chunk_obj.chunk_space = self # Let objs access to chunk_space.
+	R_SpaceChunk_obj.chunk_space = self # Let objs access to chunk_space.
 	
 	# Start ticks #
 	observation_queue_handle_tick.timeout.connect(handle_observation_queue)
@@ -401,7 +401,7 @@ func init():
 	
 	broadcast_chunk_update_tick.start(broadcast_chunk_update_tick_interval) # going to be connected to the chunks that have observer.
 	
-	intobject_pre_allocation_tick.timeout.connect(chunk_item.intobject_pool.pre_allocate)
+	intobject_pre_allocation_tick.timeout.connect(ChunkItem.intobject_pool.pre_allocate)
 	intobject_pre_allocation_tick.start(intobject_pre_allocation_tick_interval)
 	
 	print("Chunk ticks are started.")
@@ -430,7 +430,7 @@ func queue_observe_or_unobserve(o: int, pos: Vector3i, observer):
 	observation_queue.append([o, pos, observer])
 
 ## chunk.observe() must be called after set_chunk().
-func observe(pos : Vector3i, observer) -> chunk_item:
+func observe(pos : Vector3i, observer) -> ChunkItem:
 	var chunk = get_chunk(pos)
 	if chunk == null: # if not loaded, load.
 		chunk = directory.load_chunk(pos)
@@ -440,7 +440,7 @@ func observe(pos : Vector3i, observer) -> chunk_item:
 			chunk.observe(observer)
 			return chunk
 		else: # if the chunk file doesn't exist, create new chunk.
-			chunk = chunk_item.new() as chunk_item
+			chunk = ChunkItem.new() as ChunkItem
 			set_chunk(pos, chunk)
 			chunk.observe(observer)
 			return chunk
@@ -464,7 +464,7 @@ func queue_unload(pos: Vector3i):
 	unload_queue.append(pos)
 
 func unload_chunk(chunk_pos: Vector3i):
-	var chunk = get_chunk(chunk_pos) as chunk_item
+	var chunk = get_chunk(chunk_pos) as ChunkItem
 	if chunk == null:
 		return
 	if not chunk.observers.is_empty():
@@ -490,11 +490,11 @@ func unload_all_chunks():
 	while handle_unload_queue() > 0:
 		pass
 
-func set_chunk(pos: Vector3i, new_chunk: chunk_item):
+func set_chunk(pos: Vector3i, new_chunk: ChunkItem):
 	new_chunk.chunk_pos = pos # Set chunk_pos of the new_chunk.
 	select_partition_from_chunk_pos(pos)[pos] = new_chunk
 
-func get_chunk(pos: Vector3i) -> chunk_item:
+func get_chunk(pos: Vector3i) -> ChunkItem:
 	return select_partition_from_chunk_pos(pos).get(pos)
 
 func select_partition_from_chunk_pos(chunk_pos: Vector3i) -> Dictionary:

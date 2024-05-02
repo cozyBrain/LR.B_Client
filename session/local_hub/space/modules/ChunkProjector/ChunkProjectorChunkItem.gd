@@ -1,7 +1,7 @@
-class_name proj_chunk_item # chunk item of the chunk_projection
+class_name ChunkProjectorChunkItem # chunk item of the SpaceChunkProjector
 extends Node3D
 
-static var intobject_pool := Chunk.intobject_space_pool.new()
+static var intobject_pool := R_SpaceChunk.intobject_space_pool.new()
 var intobject: Array # intobject[x][y][z]
 var flobject: Array
 var intobject_changes: Array

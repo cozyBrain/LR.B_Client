@@ -1,9 +1,13 @@
+class_name PlayerMotionSync_R
 extends Node
 
-@onready var player_module_chunk_projection := $"../chunk_projection" as Chunk_projection
-@onready var space_module_chunk := %space_modules/chunk as Chunk
-@onready var player_module_player := $"../player"
+const module_name := &"PlayerMotionSync"
+
+@onready var player_module_chunk_projection := $"../ChunkProjector" as R_PlayerChunkProjector
+@onready var space_module_chunk := %space_modules/Chunk as R_SpaceChunk
+@onready var player_module_player := $"../Player"
 @onready var player = %offline_player
+
 
 func handle(v : Dictionary):
 	var head_rotation
@@ -22,7 +26,7 @@ func handle(v : Dictionary):
 				{
 					"Hub" : terminal.local_hub,
 					"ModuleContainer" : "Player",
-					"Module" : "player_motion_sync",
+					"Module" : module_name,
 					"Content" : {
 						"sync_position" : [position.x,position.y,position.z], 
 						"sync_head_rotation" : [head_rotation, player_rotation]
