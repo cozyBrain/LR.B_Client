@@ -39,6 +39,7 @@ class ChunkItem:
 		# init projection_sapshot.
 		projection_snapshot.resize(OBJ_TYPES)
 		projection_snapshot.fill([])
+		projection_snapshot[LINK_POINTER] = Dictionary()
 		
 	func return_res() -> void: ## before free, return_res() for performance and to disconnect signals.
 		# Return save_data["_intobject"].
@@ -73,13 +74,15 @@ class ChunkItem:
 		#projection_snapshot[Flobject] = flobject_snapshot
 		
 		# Load link_pointer.
-		var link_pointer_save_data := data.get(["_link_pointer"], {}) as Dictionary
+		var link_pointer_save_data := data.get("_link_pointer", {}) as Dictionary
 		if link_pointer_save_data.is_empty():
 			projection_snapshot[LINK_POINTER] = Dictionary()
 		else:
 			for link_id in link_pointer_save_data.keys():
 				# save_data = {[spoint, epoint] : false}
+				print("load link_id: ", link_id)
 				insert_link_pointer(link_id)
+		project_link_pointer_changes()
 		
 		# Create compressed_snapshot after loading intobject & flobject.
 		is_compressed_snapshot_update_pending = true
@@ -102,6 +105,7 @@ class ChunkItem:
 		var flobject_save_data := Array()
 		for obj in _flobject:
 			flobject_save_data.append(obj.get_save_data())
+		print("save_lp: ", _link_pointer)
 		save_data = {
 			"_intobject"	: intobject_save_data,
 			"_flobject"		: flobject_save_data,
@@ -243,9 +247,9 @@ class ChunkItem:
 			var channel_changes = link_pointer_change_set[changed_link]
 			# Update snapshot.
 			if channel_changes == null: # if it's removed with remove_link_pointer().
-				projection_snapshot.erase(changed_link)
+				projection_snapshot[LINK_POINTER].erase(changed_link)
 			else:
-				projection_snapshot[changed_link] = channel_changes # can be complicated like projection_snapshot[INTOBJECT][x][y][z].merge(changes, true)
+				projection_snapshot[LINK_POINTER][changed_link] = channel_changes # can be complicated like projection_snapshot[INTOBJECT][x][y][z].merge(changes, true)
 		var link_pointer_projection := link_pointer_change_set.duplicate(true)
 		link_pointer_change_set.clear()
 		return link_pointer_projection

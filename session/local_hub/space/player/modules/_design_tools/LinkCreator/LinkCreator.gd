@@ -81,18 +81,19 @@ func _unhandled_input(event):
 						for point in start_points:
 							var link = load("res://session/virtual_remote_hub/space/objects/shapes/triLink/area(visible).tscn").instantiate()
 							@warning_ignore("static_called_on_instance")
-							var aligned_link = align_link(point, pos, link)
-							link_projection.add_child(aligned_link) # Visualize link.
+							var aligned_link = SpaceLinkProjector.align_link(point, pos, link)
+							#link_projection.add_child(aligned_link) # Visualize link.
 							@warning_ignore("static_called_on_instance")
-							var calculated_chunkPosForLinkPointer = calculateChunkPosForLinkPointer(point, pos, 0.5)
+							var calculated_chunkPosForLinkPointer = SpaceLinkProjector.calculateChunkPosForLinkPointer(point, pos, 0.5)
 							# Add chunks_to_observe. (The task ignores duplication.)
-							task.add_chunk_to_observe([calculated_chunkPosForLinkPointer[0]]) # chunk pos for link pointer.
+							#for i in (calculated_chunkPosForLinkPointer[0] as Array).size():
+							task.add_chunk_to_observe(calculated_chunkPosForLinkPointer[0]) # chunk pos for link pointer.
 							task.add_chunk_to_observe([calculated_chunkPosForLinkPointer[1]]) # start_point chunk pos.
 							task.add_chunk_to_observe([calculated_chunkPosForLinkPointer[2]]) # end_point chunk pos.
 							var link_data: Array[Vector3i] = [point] # start_point
 							link_data.append_array(calculated_chunkPosForLinkPointer[0])
 							link_data.append(pos) # end_point
-							link_data.append(0) # Add channel data. ##TODO: deprecate channel.
+							#link_data.append(0) # Add channel data. ##TODO: deprecate channel.
 							links_to_create.append(link_data)
 						unified_chunk_observer.observe(task)
 						# Wait until the chunk is guaranteed to be accessible.
@@ -124,44 +125,8 @@ func _unhandled_input(event):
 		start_points.clear()
 
 
-## Set link position and rotation with A and B.
-## A(start_point), B(end_point).
-static func align_link(A: Vector3, B: Vector3, link: Object) -> Object:
-	#var link := node.areas[&"triLink"] as Node3D
-	# Config link.
-	var distance = A.distance_to(B)
-	var position = (A + B) / 2
-	# Set link length.
-	link.scale.z = link.scale.z * distance
-	# Set link direction
-	var direction = A.direction_to(B)
-	var d = Vector3.UP
-	if abs(d.dot(direction)) > 0.99:
-		d = Vector3.RIGHT
-	link.look_at_from_position(position, position + direction, d)
-	return link
 
 
 #Dictionary[link_id] = Dictionary[link_id] + 1
 
-## start and end_point shouldn't be chunk pos.
-static func calculateChunkPosForLinkPointer(start_point: Vector3, end_point: Vector3, distance_threshold) -> Array:
-	var distance = start_point.distance_to(end_point)
-	var link_pointer_count = max(2, int(distance / distance_threshold))
-	var start_point_chunk := R_SpaceChunk.global_pos_to_chunk_pos(start_point, SpaceChunkProjector.chunk_size)
-	var end_point_chunk := R_SpaceChunk.global_pos_to_chunk_pos(end_point, SpaceChunkProjector.chunk_size)
-	var chunk_pos_list: Array[Vector3i] = []
-	
-	for i in range(1, link_pointer_count):
-		var t = float(i) / (link_pointer_count - 1)
-		var link_pointer_chunk_pos = R_SpaceChunk.global_pos_to_chunk_pos(start_point.lerp(end_point, t), SpaceChunkProjector.chunk_size)
-		# Exclude start_point_chunk and end_point_chunk position.
-		if link_pointer_chunk_pos == start_point_chunk or link_pointer_chunk_pos == end_point_chunk:
-			continue
-		# Prevent duplication
-		if not chunk_pos_list.is_empty():
-			if chunk_pos_list.back() == link_pointer_chunk_pos:
-				continue
-		chunk_pos_list.append(link_pointer_chunk_pos)
-	
-	return [chunk_pos_list, start_point_chunk, end_point_chunk]
+

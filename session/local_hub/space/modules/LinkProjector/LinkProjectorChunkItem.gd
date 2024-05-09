@@ -1,117 +1,131 @@
 class_name LinkProjectorChunkItem # chunk item that renders links.
 extends Node3D
 
+@onready var triLink = preload("res://session/virtual_remote_hub/space/objects/shapes/triLink/mesh.tres")
 
 var links: Dictionary = {}
+var linkPainter: LinkPainter
+
+func _init():
+	linkPainter = LinkPainter.new()
+	linkPainter.init(triLink)
+
+func _ready():
+	add_child(linkPainter)
+
 
 func increment_link_observation_count(link_id: Array):
+	print("link_id:", link_id)
 	if links.get(link_id) == null: # New link data.
 		links[link_id] = 1
-		##TODO: Render the connection.
-		project_link()
-		
+		linkPainter.add_instance(link_id, SpaceLinkProjector.align_link_and_get_transform(link_id[0], link_id[1]), Color(255,255,255))
 	else: # if the link is already rendered.
 		links[link_id] += 1
 
 func erase_link(link_id: Array):
 	links.erase(link_id)
-	##TODO: Undo rendered connection.
-	
-	pass
+	linkPainter.remove_instance(link_id)
 
 
-func project_link():
-	pass
-
-func project_changes():
-	# Get obj_painters to clear right after painting latest one.
-	link_painters_to_clear.merge(link_painters, true)
-	link_painters.clear()
-	# Merge intobject_changes into intobject.
+class LinkPainter extends MultiMeshInstance3D:
+	## A dictionary that maps link IDs to the indexes of MultiMesh instances.
+	var link_to_instance := {}
+	var instance_to_link := {}
+	var instance_count := 0 ## Number of instances.
 	
-	##TODO: Iterate link_changes.
-	var obj = null
-	
-	# Get basic properties of the obj.
-	var obj_properties = node.scripts[obj["id"]]
-	var shape_id: StringName = obj_properties.get("shape_id")
-	var color: Color = obj_properties.get("color")
-	var pos := Vector3()
-	# Get painter with shape_id.
-	var painter: link_painter = link_painters.get(shape_id)
-	if painter == null:
-		# create and setup new obj_painter for the shape.
-		painter = link_painter.new()
-		painter.set_mesh(node.meshes[shape_id])
-		painter.set_collision_shape(node.static_bodies[shape_id])
-		link_painters[shape_id] = painter
-	
-	painter.paint_at(pos, color)
-	
-	# Paint
-	for l_painter in link_painters.values():
-		call_deferred("add_child", l_painter)
-		l_painter.call_deferred("paint")
-	
-	# Clear obj painters in the obj_painters_to_clear.
-	clear_obj_painters()
-
-func clear_obj_painters():
-	for painter in link_painters_to_clear.values():
-		call_deferred("remove_child", painter)
-	link_painters_to_clear.clear()
-
-
-var link_painters: Dictionary
-var link_painters_to_clear: Dictionary
-
-class link_painter extends MultiMeshInstance3D:
-	enum {iTransform, iColor, inst_data_size} ## iColor means InstanceColor.
-	var mm := MultiMesh.new()
-	var cs ## CollisionShape
-	var collision_shapes: Array ## Contains collision_shapes of the instances.
-	var inst_data: Array ## instance_data
-	
-	func set_mesh(m: Mesh):
+	## Set mesh.
+	func init(m: Mesh):
+		var mm := MultiMesh.new()
 		mm.mesh = m
 		mm.transform_format = MultiMesh.TRANSFORM_3D
 		mm.set_use_colors(true)
 		multimesh = mm
-	func set_collision_shape(c):
-		cs = c
 	
-	func activate_cs(): ## Activate collision shapes.
-		for c in collision_shapes:
-			c.get_node("CollisionShape3D").set_deferred("disabled", false)
-	func deactivate_cs(): ## Deactivate collision shapes.
-		for c in collision_shapes:
-			c.get_node("CollisionShape3D").set_deferred("disabled", true)
+	func add_instance(link_id: Array, trans: Transform3D, color: Color):
+		var instance_id = instance_count
+		instance_count += 1
+		multimesh.instance_count = instance_count
 	
-	func paint():
-		var inst_count := inst_data.size()
-		mm.instance_count = inst_count
-		for i in inst_count:
-			# get paint data from inst_data
-			var trans := inst_data[i][iTransform] as Transform3D
-			var color := inst_data[i][iColor] as Color
-			mm.set_instance_transform(i, trans)
-			mm.set_instance_color(i, color)
-			# add collision shape for the instance.
-			var c = cs.instantiate()
-			c.transform = trans
-			add_child(c)
-			collision_shapes.append(c)
-			
+		multimesh.set_instance_transform(instance_id, trans)
+		multimesh.set_instance_color(instance_id, color)
 	
-	func paint_at(pos: Vector3, color: Color):
-		var trans := Transform3D(Basis(), Vector3(pos.x,pos.y,pos.z))
-		# build data and append into inst_data for the paint
-		var data := []
-		data.resize(inst_data_size)
-		data[iTransform] = trans
-		data[iColor] = color
-		inst_data.append(data)
+		# Mapping link_id and instance_index.
+		link_to_instance[link_id] = instance_id
+		instance_to_link[instance_id] = link_id
+		print("add_instance: ", link_id, trans)
+		return instance_id
+	
+	func update_instance(link_id: Array, trans: Transform3D, color: Color):
+		var instance_id = link_to_instance[link_id]
+		if instance_id == null:
+			return
+		multimesh.set_instance_transform(instance_id, trans)
+		multimesh.set_instance_color(instance_id, color)
+	
+	func remove_instance(link_id):
+		var instance_id = link_to_instance[link_id]
+		if instance_id == null:
+			return
+		
+		var last_instance_id = instance_count - 1
+		
+		# Swap
+		swap_instances(instance_id, last_instance_id)
+		## Update mapping.
+		link_to_instance[find_link_by_instance(last_instance_id)] = instance_id # E(link_id) = 3 # 5->3
+		instance_to_link[instance_id] = link_to_instance[find_link_by_instance(last_instance_id)] # 3 = E(link_id) # C->E
+	
+		link_to_instance.erase(link_id)
+		instance_to_link.erase(last_instance_id)
+		instance_count -= 1
+		multimesh.instance_count = instance_count
+	
+	func swap_instances(instance_id, last_instance_id):
+		var last_instance_transform = multimesh.get_instance_transform(last_instance_id)
+		var last_instance_color = multimesh.get_instance_color(last_instance_id)
+		multimesh.set_instance_transform(instance_id, last_instance_transform)
+		multimesh.set_instance_color(instance_id, last_instance_color)
+	
+	func find_link_by_instance(instance_id: int):
+		return instance_to_link.get(instance_id)
+	func find_instance_by_link(link_id: Array):
+		return link_to_instance.get(link_id)
 	
 	func clear():
-		mm.instance_count = 0
-		inst_data.clear()
+		multimesh.instance_count = 0
+		instance_count = 0
+		link_to_instance.clear()
+		instance_to_link.clear()
+
+
+#Algorithm: Efficiently remove specific instances from the mapping between MultiMesh instances and links.
+#<0> Want to remove C(instance_id = 3)
+#1 2 3 4 5, these are multimesh instance idx.
+#A B C D E, these are link_id.
+#1 2 3 4 5, these are elements of the instance_to_link.
+#link_to_instance[E] -> 5
+#instance_to_link[5] -> E
+#
+#<1> Swap C and E(last)
+#1 2 3 4 5
+#A B E D C
+#1 2 5 4 3
+#link_to_instance[E] -> 5
+#instance_to_link[5] -> E
+#
+#<2> Update mapping
+#1 2 3 4 5
+#A B E D C
+#1 2 3 4 3
+#link_to_instance[E] -> 3
+#instance_to_link[3] -> E
+#
+#<3> Erase C -> link_to_instance.erase(link_id), instance_to_link.erase(last_instance_id)
+#1 2 3 4 5
+#A B E D
+#1 2 3 4
+#
+#<4> instance_count - 1.
+#1 2 3 4
+#A B E D
+#1 2 3 4
