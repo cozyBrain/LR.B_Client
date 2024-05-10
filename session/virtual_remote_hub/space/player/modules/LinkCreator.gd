@@ -11,7 +11,7 @@ func handle(v : Dictionary):
 			var task_id = v["TaskID"]
 			var links_to_create = v["links"]
 			# Create links...
-			print("received links_to_create: ", links_to_create)
+			print("Remote.LinkCreator: received links_to_create: ", links_to_create)
 			for link_data in links_to_create:
 				link_data = link_data as Array
 				var link_data_size: int = link_data.size()
@@ -34,7 +34,7 @@ func handle(v : Dictionary):
 				if link_data_size >= 3: # Register link pointer only when [spoint, lp_pos, epoint].
 					# Register link pointers.
 					var lp := [spoint, epoint]
-					for i in range(1, link_data_size-2):
+					for i in range(1, link_data_size-1):
 						var lp_pos = link_data[i]
 						var c = chunk.get_chunk(lp_pos)
 						c.insert_link_pointer(lp)

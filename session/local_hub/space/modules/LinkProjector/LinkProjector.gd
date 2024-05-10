@@ -84,12 +84,19 @@ static func align_link_and_get_transform(A: Vector3, B: Vector3) -> Transform3D:
 	if abs(up.dot(direction)) > 0.99:
 		up = Vector3.RIGHT
 	
+	# Basis
 	var z_axis = direction
 	var x_axis = up.cross(z_axis).normalized()
 	var y_axis = z_axis.cross(x_axis)
 	
+	x_axis *= -1
+	z_axis *= -1
+	
+	x_axis *= 0.1
+	y_axis *= 0.1
+	z_axis *= distance
+	
 	var b = Basis(x_axis, y_axis, z_axis)
-	var trans = Transform3D(b, pos).scaled(length_scale)
+	var trans = Transform3D(b, pos)
 	
 	return trans
-

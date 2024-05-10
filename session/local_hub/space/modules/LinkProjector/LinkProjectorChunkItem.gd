@@ -1,7 +1,7 @@
 class_name LinkProjectorChunkItem # chunk item that renders links.
 extends Node3D
 
-@onready var triLink = preload("res://session/virtual_remote_hub/space/objects/shapes/triLink/mesh.tres")
+var triLink = preload("res://session/virtual_remote_hub/space/objects/shapes/triLink/mesh.tres")
 
 var links: Dictionary = {}
 var linkPainter: LinkPainter
@@ -18,6 +18,8 @@ func increment_link_observation_count(link_id: Array):
 	print("link_id:", link_id)
 	if links.get(link_id) == null: # New link data.
 		links[link_id] = 1
+		## TODO: Fix the link not showing up due to improper transform settings.
+		#linkPainter.add_instance(link_id, SpaceLinkProjector.align_link_and_get_transform(link_id[0], link_id[1]), Color(255,255,255))
 		linkPainter.add_instance(link_id, SpaceLinkProjector.align_link_and_get_transform(link_id[0], link_id[1]), Color(255,255,255))
 	else: # if the link is already rendered.
 		links[link_id] += 1

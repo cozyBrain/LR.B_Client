@@ -80,10 +80,9 @@ func _unhandled_input(event):
 						var links_to_create := []
 						for point in start_points:
 							var link = load("res://session/virtual_remote_hub/space/objects/shapes/triLink/area(visible).tscn").instantiate()
-							@warning_ignore("static_called_on_instance")
-							var aligned_link = SpaceLinkProjector.align_link(point, pos, link)
-							#link_projection.add_child(aligned_link) # Visualize link.
-							@warning_ignore("static_called_on_instance")
+							link.transform = SpaceLinkProjector.align_link_and_get_transform(point, pos)
+							#link_projection.add_child(link) # Visualize link.
+							
 							var calculated_chunkPosForLinkPointer = SpaceLinkProjector.calculateChunkPosForLinkPointer(point, pos, 0.5)
 							# Add chunks_to_observe. (The task ignores duplication.)
 							#for i in (calculated_chunkPosForLinkPointer[0] as Array).size():
