@@ -1,4 +1,5 @@
-class_name LinkProjectorChunkItem # chunk item that renders links.
+## chunk item that renders links.
+class_name LinkProjectorChunkItem
 extends Node3D
 
 var triLink = preload("res://session/virtual_remote_hub/space/objects/shapes/triLink/mesh.tres")
@@ -15,18 +16,20 @@ func _ready():
 
 
 func increment_link_observation_count(link_id: Array):
-	print("link_id:", link_id)
+	print("LPCI received link_id:", link_id)
 	if links.get(link_id) == null: # New link data.
 		links[link_id] = 1
-		## TODO: Fix the link not showing up due to improper transform settings.
-		#linkPainter.add_instance(link_id, SpaceLinkProjector.align_link_and_get_transform(link_id[0], link_id[1]), Color(255,255,255))
 		linkPainter.add_instance(link_id, SpaceLinkProjector.align_link_and_get_transform(link_id[0], link_id[1]), Color(255,255,255))
 	else: # if the link is already rendered.
 		links[link_id] += 1
 
-func erase_link(link_id: Array):
-	links.erase(link_id)
+## if there's no link to render, return true to be freed.
+func erase_link(link_id: Array) -> bool:
 	linkPainter.remove_instance(link_id)
+	links.erase(link_id)
+	if links.is_empty():
+		return true
+	return false
 
 
 class LinkPainter extends MultiMeshInstance3D:
@@ -45,16 +48,19 @@ class LinkPainter extends MultiMeshInstance3D:
 	
 	func add_instance(link_id: Array, trans: Transform3D, color: Color):
 		var instance_id = instance_count
+		var buff := multimesh.get_buffer()
 		instance_count += 1
 		multimesh.instance_count = instance_count
-	
+		buff.resize(multimesh.buffer.size())
+		multimesh.set_buffer(buff)
+		
 		multimesh.set_instance_transform(instance_id, trans)
 		multimesh.set_instance_color(instance_id, color)
-	
+		
 		# Mapping link_id and instance_index.
 		link_to_instance[link_id] = instance_id
 		instance_to_link[instance_id] = link_id
-		print("add_instance: ", link_id, trans)
+		
 		return instance_id
 	
 	func update_instance(link_id: Array, trans: Transform3D, color: Color):

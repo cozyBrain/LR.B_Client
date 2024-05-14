@@ -97,6 +97,7 @@ func _unhandled_input(event):
 						unified_chunk_observer.observe(task)
 						# Wait until the chunk is guaranteed to be accessible.
 						await task.done
+						
 						# Create links.
 						terminal.handle(
 							{

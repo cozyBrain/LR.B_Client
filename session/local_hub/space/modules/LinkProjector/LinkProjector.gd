@@ -16,24 +16,28 @@ var link_chunk_item = preload("res://session/local_hub/space/modules/LinkProject
 ## Find start_point_chunk and request it to render links.
 func project(projection: Dictionary):
 	for link_id in projection.keys():
-		print("LinkProjector.received link_id: ", link_id)
 		##TODO: Consider unobserving link_pointers. Should link_chunk_item share links with chunk_item?? 
 		var start_point = link_id[0]
+		var end_point = link_id[1]
 		var start_point_chunk_pos = R_SpaceChunk.global_pos_to_chunk_pos(start_point, R_SpaceChunk.chunk_size)
 		var start_point_chunk := chunk.get(start_point_chunk_pos) as LinkProjectorChunkItem # link is rendered in this chunk.
-		var end_point = link_id[1]
 		if start_point_chunk == null:
 			chunk[start_point_chunk_pos] = link_chunk_item.instantiate() # Create start_point_chunk.
 			start_point_chunk = chunk[start_point_chunk_pos] # Update var, start_point_chunk.
+			add_child(start_point_chunk)
 		
 		# if projection[link_id] is null, this means that the link has been removed. This should be reflected.
 		if projection[link_id] == null:
-			start_point_chunk.erase_link(link_id)
-			return
-		
-		add_child(start_point_chunk)
-		start_point_chunk.increment_link_observation_count(link_id)
+			if start_point_chunk.erase_link(link_id):
+				# if the start_point_chunk has no link to render, free_chunk().
+				free_chunk(start_point_chunk_pos)
+		else:
+			# Add link.
+			start_point_chunk.increment_link_observation_count(link_id)
 
+func free_chunk(chunk_pos: Vector3i):
+	remove_child(chunk[chunk_pos])
+	chunk.erase(chunk_pos)
 
 ## start and end_point shouldn't be chunk pos.
 static func calculateChunkPosForLinkPointer(start_point: Vector3, end_point: Vector3, distance_threshold) -> Array:
