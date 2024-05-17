@@ -83,7 +83,8 @@ class LinkPainter extends MultiMeshInstance3D:
 		
 		var last_instance_id = instance_count - 1
 		
-		if instance_count > 1 and instance_id != last_instance_id:
+		# instance_count has to be greater than 2. I'm not exactly sure why, but otherwise I get the error 'swap_instance(): Index p_index = 2 is out of bounds (multimesh->instances = 2)'.
+		if instance_count > 2 and instance_id != last_instance_id:
 			# Swap
 			swap_instances(instance_id, last_instance_id)
 		
