@@ -4,7 +4,9 @@ extends Node3D
 static var intobject_pool := R_SpaceChunk.intobject_space_pool.new()
 var intobject: Array # intobject[x][y][z]
 var flobject: Array
+var link_pointer := LinkProjectorChunkItemStrippedDown.new()
 var intobject_changes: Array
+var link_pointer_changes := {} ##WARNING: READ_ONLY!
 #var flobject_changes: Array
 
 #var intobject_changes_mutex := Mutex.new()
@@ -28,6 +30,16 @@ func clear_obj_painters():
 		call_deferred("remove_child", painter)
 	obj_painters_to_clear.clear()
 
+func reflect_link_pointer_changes():
+	for link_id in link_pointer_changes.keys():
+		# if link_pointer_changes[link_id] is null, this means that the link has been removed. This should be reflected.
+		if link_pointer_changes[link_id] == null:
+			link_pointer.unregister_link_pointer(link_id)
+		else:
+			link_pointer.register_link_pointer(link_id)
+func get_registered_link_pointer() -> Dictionary:
+	return link_pointer.links
+
 func project_changes():
 	# Get obj_painters to clear right after painting latest one.
 	obj_painters_to_clear.merge(obj_painters, true)
@@ -48,6 +60,9 @@ func project_changes():
 							intobject[x][y][z].merge(changes, true)
 						
 						var obj = intobject[x][y][z]
+						
+						##TODO: Get obj properties(inport & outport) and reflect to the link_pointer_changes.
+						
 						
 						# Get basic properties of the obj.
 						var obj_properties = node.scripts[obj["id"]]
@@ -80,6 +95,9 @@ func project_changes():
 	# activate_collision() after painter.paint() if collision is activated.
 	if collision_activated:
 		call_deferred("activate_collision")
+	
+	
+	reflect_link_pointer_changes()
 
 
 

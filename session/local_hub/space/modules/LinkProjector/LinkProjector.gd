@@ -35,6 +35,14 @@ func project(projection: Dictionary):
 			# Add link.
 			start_point_chunk.increment_link_observation_count(link_id)
 
+## Usually called by ChunkProjector.free_chunk()
+func decrement_link_observation_count(link_id: Array):
+	var start_point = link_id[0]
+	var start_point_chunk_pos = R_SpaceChunk.global_pos_to_chunk_pos(start_point, R_SpaceChunk.chunk_size)
+	var start_point_chunk := chunk.get(start_point_chunk_pos) as LinkProjectorChunkItem # link is rendered in this chunk.
+	start_point_chunk.decrement_link_observation_count(link_id)
+
+
 func free_chunk(chunk_pos: Vector3i):
 	remove_child(chunk[chunk_pos])
 	chunk.erase(chunk_pos)
@@ -82,7 +90,7 @@ static func align_link_and_get_transform(A: Vector3, B: Vector3) -> Transform3D:
 	var distance = A.distance_to(B)
 	var pos = (A + B) / 2
 	var direction = (B - A).normalized()
-	var length_scale = Vector3(1, 1, distance)
+	#var length_scale = Vector3(1, 1, distance)
 	
 	var up = Vector3.UP
 	if abs(up.dot(direction)) > 0.99:

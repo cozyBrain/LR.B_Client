@@ -9,7 +9,7 @@ static var chunk_size = R_SpaceChunk.chunk_size ## TODO: Update
 
 var chunks: Dictionary # {pos: chunk}
 
-@onready var link_projection := %space_modules/LinkProjector as SpaceLinkProjector
+@onready var link_projector := %space_modules/LinkProjector as SpaceLinkProjector
 
 @onready var chunk_item = preload("res://session/local_hub/space/modules/ChunkProjector/ChunkProjectorChunkItem.tscn")
 
@@ -54,12 +54,13 @@ func handle(v: Dictionary):
 				var intobject_changes = chunk_update.get("intobject")
 				if intobject_changes != null:
 					chunk.intobject_changes = intobject_changes
+					chunk.link_pointer_changes = chunk_update.get("link_pointer", {})
 					thread_project_changes.wait_to_finish()
 					thread_project_changes.start(chunk.project_changes)
 				
 				var link_pointer_changes = chunk_update.get("link_pointer")
 				if link_pointer_changes != null:
-					link_projection.project(link_pointer_changes)
+					link_projector.project(link_pointer_changes)
 
 
 func _exit_tree():
@@ -68,9 +69,15 @@ func _exit_tree():
 func free_chunk(chunk_pos: Vector3i):
 	var chunk = chunks.get(chunk_pos) as ChunkProjectorChunkItem
 	if chunk != null:
+		# Get links to decrement observation count.
+		var links_to_decrement := chunk.get_registered_link_pointer()
+		for link_id in links_to_decrement.keys():
+			link_projector.decrement_link_observation_count(link_id)
+		
 		chunk.return_res()
 		remove_child(chunk)
 		chunks.erase(chunk_pos)
+
 
 func _on_chunks_detector_detected(area):
 	var detected_area_pos = Vector3i(area.get_node("..").position / chunk_size)
@@ -86,7 +93,7 @@ func _on_chunks_detector_detected_exit(area):
 
 
 var max_visible_chunk_range := 64
-var visible_chunk_radius : int = 10 # unit: chunk.
+var visible_chunk_radius : int = 5 # unit: chunk.
 var invisible_chunk_radius : int: # must be bigger than visible_chunk_radius.
 	set(v):
 		invisible_chunk_radius = clampi(v, visible_chunk_radius + 1, v)
