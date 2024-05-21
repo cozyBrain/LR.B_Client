@@ -5,7 +5,7 @@ const id := &"ReLU"
 static var id_hashed: int = id.hash()
 
 
-const color := Color.GREEN * 2#(brighter by multiplying color)
+const color := Color.GREEN * 2 #(brighter by multiplying color)
 const shape_id := &"box"
 
 
@@ -27,38 +27,42 @@ var leakage: float = .1
 
 ## return true if changes have been made.
 func connect_port(target, port: StringName) -> bool:
+	var connected := false
 	match port:
 		node.out_port:
 			match target.get("id"):
 				N_ReLU.id:
-					out_ports[target] = null
+					out_ports[target] = false
+					connected = true
 				_:
-					return false
+					connected = false
+			if connected:
+				add_change("out_ports", {target: out_ports[target]})
 		node.in_port:
 			match target.get("id"):
 				N_ReLU.id, N_Input.id:
 					in_ports[target] = float(0) # Each port has its own weight.
+					connected = true
 				_:
-					return false
+					connected = false
+			if connected:
+				add_change("in_ports", {target: in_ports[target]})
 		_:
-			return false
-	parent_chunk.queue_projection_update()
-	parent_chunk.enable_save_on_unload()
-	return true
+			connected = false
+	return connected
 
 
 ## return true if changes have been made.
 func disconnect_port(target, port: StringName) -> bool:
-	var ret := false
+	var disconnected := false
 	match port:
 		node.out_port:
-			ret = out_ports.erase(target)
+			disconnected = out_ports.erase(target)
+			add_change("out_ports", {target: null})
 		node.in_port:
-			ret = in_ports.erase(target)
-	if ret:
-		parent_chunk.queue_projection_update()
-		parent_chunk.enable_save_on_unload()
-	return ret
+			disconnected = in_ports.erase(target)
+			add_change("in_ports", {target: null})
+	return disconnected
 
 
 func prop() -> void:

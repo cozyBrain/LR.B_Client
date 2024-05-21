@@ -8,7 +8,7 @@ var change_set: Dictionary
 var queue_projection_update: Callable
 
 ## request parent_chunk to update projection.
-func add_change(changed_variable: String, variable, enable_save_on_unload := true) -> void: 
+func add_change(changed_variable: String, variable, enable_save_on_unload := true) -> void:
 	change_set[changed_variable] = variable
 	queue_projection_update.call() # parent_chunk.queue_intobject_projection_update()
 	parent_chunk.enable_save_on_unload(enable_save_on_unload)
@@ -17,6 +17,7 @@ func add_initial_change(changed_variable: String, variable) -> void:
 	change_set[changed_variable] = variable
 func clear_change_set() -> void:
 	change_set.clear()
+
 
 func project_changes() -> Dictionary:
 	var changes := change_set.duplicate(true)

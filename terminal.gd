@@ -25,12 +25,14 @@ func set_up_connection() -> int:
 	)
 	return err
 
+
 func _ready():
 	# connect signals
 	multiplayer.connected_to_server.connect(_on_connected_to_server)
 	multiplayer.server_disconnected.connect(_on_server_disconnected)
 	multiplayer.connection_failed.connect(_on_connection_failed)
 	multiplayer.peer_packet.connect(_on_peer_packet)
+
 
 func _on_connected_to_server():
 	print("connected to the server.")

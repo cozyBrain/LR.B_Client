@@ -22,31 +22,41 @@ var output: float
 
 ## return true if changes have been made.
 func connect_port(target, port: StringName) -> bool:
+	var connected := false
 	match port:
 		node.out_port:
 			match target.get("id"):
 				N_ReLU.id:
-					out_ports[target] = null
+					out_ports[target] = false
+					connected = true
 				_:
-					return false
+					connected = false
+			if connected:
+				add_change("out_ports", {target: out_ports[target]})
 		node.in_port:
 			match target.get("id"):
 				#N_Something.id:
 					#in_ports.push_front(target)
 				_:
-					return false
+					connected = false
+			if connected:
+				add_change("in_ports", {target: in_ports[target]})
 		_:
-			return false
-	return true
+			connected = false
+	return connected
+
 
 ## return true if changes have been made.
 func disconnect_port(target, port: StringName) -> bool:
+	var disconnected := false
 	match port:
 		node.out_port:
-			return out_ports.erase(target)
+			disconnected = out_ports.erase(target)
+			add_change("out_ports", {target: null})
 		node.in_port:
-			return in_ports.erase(target)
-	return false
+			disconnected = in_ports.erase(target)
+			add_change("in_ports", {target: null})
+	return disconnected
 
 
 #func updateEmissionByOutput() -> void:

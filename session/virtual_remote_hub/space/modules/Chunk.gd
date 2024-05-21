@@ -138,7 +138,7 @@ class ChunkItem:
 		link_pointer_change_set[link_pointer] = false
 		queue_link_pointer_projection_update()
 		enable_save_on_unload()
-	func remove_link_pointer(link_pointer: Array, channel: int):
+	func remove_link_pointer(link_pointer: Array):
 		if _link_pointer.erase(link_pointer):
 			link_pointer_change_set[link_pointer] = null
 			queue_link_pointer_projection_update()
@@ -221,17 +221,30 @@ class ChunkItem:
 							intobject_projection[x][y][z] = obj
 							# Update snapshot.
 							projection_snapshot[INTOBJECT][x][y][z] = obj
-						_: # don't change "_:" to "Chunk_obj:".
+						_:  # don't change "_:" to "Chunk_obj:".
 							var changes: Dictionary = obj.project_changes()
 							if changes.is_empty():
 								intobject_projection[x][y][z] = false
 							else:
 								intobject_projection[x][y][z] = changes
-								# Update snapshot.
+								# - Update snapshot - #
+								# if it was empty, reset with Dictionary.
 								if projection_snapshot[INTOBJECT][x][y][z] == null:
-									# if it was empty, reset with Dictionary.
 									projection_snapshot[INTOBJECT][x][y][z] = Dictionary()
-								projection_snapshot[INTOBJECT][x][y][z].merge(changes, true) # Update projection snapshot by merging changes.
+								# Merge changes.
+								for var_name in changes.keys():
+									var changed_var = changes[var_name]
+									if typeof(changed_var) == TYPE_DICTIONARY:
+										var b: Dictionary = projection_snapshot[INTOBJECT][x][y][z].get("var_name", {})
+										for key in changed_var.keys():
+											if changed_var[key] == null:
+												b.erase(key)
+											else:
+												b[key] = changed_var[key]
+											projection_snapshot[INTOBJECT][x][y][z][var_name] = b
+									else:
+										projection_snapshot[INTOBJECT][x][y][z][var_name] = changed_var
+								#projection_snapshot[INTOBJECT][x][y][z].merge(changes, true)
 		return intobject_projection
 	func project_flobject_changes() -> Array:
 		var flobject_projection := []

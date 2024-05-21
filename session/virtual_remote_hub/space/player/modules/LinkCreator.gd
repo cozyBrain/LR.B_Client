@@ -19,27 +19,28 @@ func handle(v : Dictionary):
 				# Extract start&end point from the link_data.
 				var spoint = link_data[0] # start_point
 				var epoint = link_data[link_data_size-1] # end_point
-				#var channel = link_data[link_data_channel_idx]
+				
 				# Connect spoint node.
 				var spoint_chunk := chunk.get_chunk(R_SpaceChunk.global_pos_to_chunk_pos(spoint, chunk.chunk_size))
 				var spoint_intobject = spoint_chunk.get_intobject(R_SpaceChunk.global_pos_to_local_intobject_pos(spoint, R_SpaceChunk.chunk_size))
-				if spoint_intobject != null:
-					spoint_intobject.connect_port(epoint, node.out_port)
 				# Connect epoint node.
 				var epoint_chunk := chunk.get_chunk(R_SpaceChunk.global_pos_to_chunk_pos(epoint, chunk.chunk_size))
 				var epoint_intobject = epoint_chunk.get_intobject(R_SpaceChunk.global_pos_to_local_intobject_pos(epoint, R_SpaceChunk.chunk_size))
 				if spoint_intobject != null && epoint_intobject != null:
-					epoint_intobject.connect_port(spoint, node.in_port)
-				# minimum link data size = [(0,0,0), (5,5,5)] # spoint, epoint.
-				if link_data_size >= 3: # Register link pointer only when [spoint, lp_pos, epoint].
-					# Register link pointers.
-					var lp := [spoint, epoint]
-					for i in range(1, link_data_size-1):
-						var lp_pos = link_data[i]
-						var c = chunk.get_chunk(lp_pos)
-						c.insert_link_pointer(lp)
+					spoint_intobject.connect_port(epoint_intobject, node.out_port)
+					epoint_intobject.connect_port(spoint_intobject, node.in_port)
 				
-				
+				var ps_spoint := R_SpaceChunk.global_pos_to_chunk_pos(spoint, R_SpaceChunk.chunk_size)
+				var ps_epoint := R_SpaceChunk.global_pos_to_chunk_pos(epoint, R_SpaceChunk.chunk_size)
+				link_data[0] = ps_spoint
+				link_data[link_data_size-1] = ps_epoint
+				var lp := [spoint, epoint] # link_pointer data to insert.
+				for i in link_data_size:
+					var lp_pos = link_data[i]
+					var c = chunk.get_chunk(lp_pos)
+					c.insert_link_pointer(lp)
+			
+			
 			
 			# Feedback to the client that the operation has been done.
 			# Client is going to accept the feedback to task_queue[task1, 2,..].
