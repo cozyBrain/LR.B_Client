@@ -6,7 +6,7 @@ const module_name = &"LinkProjector"
 
 static var chunk_size = R_SpaceChunk.chunk_size ##TODO: Update
 ## link specific chunk. record rendered link.
-var chunk: Dictionary = {}
+var chunk: Dictionary = {} # {start_point_chunk_pos: LinkProjectorChunkItem}
 var link_chunk_item = preload("res://session/local_hub/space/modules/LinkProjector/LinkProjectorChunkItem.tscn")
 
 

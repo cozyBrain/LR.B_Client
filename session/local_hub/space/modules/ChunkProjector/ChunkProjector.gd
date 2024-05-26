@@ -31,7 +31,6 @@ func _ready():
 	intobject_pre_allocation_tick.start(intobject_pre_allocation_tick_interval)
 	intobject_pre_allocation_tick.timeout.connect(ChunkProjectorChunkItem.intobject_pool.pre_allocate)
 
-
 func handle(v: Dictionary):   
 	match StringName(v.get("Request")):
 		&"observe_chunk":
@@ -62,7 +61,6 @@ func handle(v: Dictionary):
 				if link_pointer_changes != null:
 					link_projector.project(link_pointer_changes)
 
-
 func _exit_tree():
 	thread_project_changes.wait_to_finish()
 
@@ -78,7 +76,6 @@ func free_chunk(chunk_pos: Vector3i):
 		remove_child(chunk)
 		chunks.erase(chunk_pos)
 
-
 func _on_chunks_detector_detected(area):
 	var detected_area_pos = Vector3i(area.get_node("..").position / chunk_size)
 	var detected_area: ChunkProjectorChunkItem = chunks.get(detected_area_pos)
@@ -91,9 +88,8 @@ func _on_chunks_detector_detected_exit(area):
 	# deactivate collision
 	detected_area.deactivate_collision()
 
-
 var max_visible_chunk_range := 64
-var visible_chunk_radius : int = 5 # unit: chunk.
+var visible_chunk_radius : int = 3 # unit: chunk.
 var invisible_chunk_radius : int: # must be bigger than visible_chunk_radius.
 	set(v):
 		invisible_chunk_radius = clampi(v, visible_chunk_radius + 1, v)
@@ -107,8 +103,6 @@ var previous_chunk_pos : Vector3i
 # prevent from requesting same observation for optimization
 var previous_visible_chunks : Dictionary # {pos...}
 var previous_invisible_chunks : Dictionary # {pos...}
-
-
 
 func update_visible_range(player_position : Vector3, spawn := false):
 	current_chunk_pos = R_SpaceChunk.global_pos_to_chunk_pos(player_position, chunk_size)
