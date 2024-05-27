@@ -129,11 +129,12 @@ func scroll_mode():
 func apply_mode():
 	match current_mode:
 		Mode.LaserPointer:
-			pass
+			$"../../head/hud/2d_hud/CenterContainer/Crosshair".visible = true
 		Mode.VoxelPointer:
 			add_child(voxel_pointer)
 			voxel_pointer_init()
 			voxel_pointer_update()
+			$"../../head/hud/2d_hud/CenterContainer/Crosshair".visible = false
 func exit_mode():
 	match current_mode:
 		Mode.LaserPointer:

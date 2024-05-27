@@ -1,7 +1,8 @@
-[gd_scene load_steps=20 format=3 uid="uid://cmkkec0mugg7y"]
+[gd_scene load_steps=21 format=3 uid="uid://cmkkec0mugg7y"]
 
 [ext_resource type="Script" path="res://session/local_hub/space/player/Player.gd" id="1_k4fub"]
 [ext_resource type="Environment" uid="uid://cvugm5xmaatil" path="res://session/local_hub/space/space_projection_world_environment.tres" id="2_234cb"]
+[ext_resource type="Texture2D" uid="uid://c721ilhykrhbw" path="res://session/virtual_remote_hub/space/objects/crosshair.png" id="2_ak440"]
 [ext_resource type="Script" path="res://session/local_hub/space/player/3d_hud/3d_hud_projector.gd" id="3_dmfoi"]
 [ext_resource type="PackedScene" uid="uid://blogxlkgokqjm" path="res://session/local_hub/space/player/3d_hud/hud_console/console.tscn" id="4_f756s"]
 [ext_resource type="Script" path="res://session/local_hub/space/player/2d_hud/quick_menu/quick_menu.gd" id="5_45j60"]
@@ -102,6 +103,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 stretch = true
+metadata/_edit_lock_ = true
 
 [node name="SubViewport" type="SubViewport" parent="player/head/hud/viewport_container_for_3d_hud"]
 transparent_bg = true
@@ -172,6 +174,26 @@ offset_right = 85.0
 offset_bottom = 31.0
 theme_override_colors/font_color = Color(0, 0.678431, 0, 1)
 text = "main"
+
+[node name="CenterContainer" type="CenterContainer" parent="player/head/hud/2d_hud"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -154.0
+offset_top = -154.0
+offset_right = 154.0
+offset_bottom = 154.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.05, 0.05)
+pivot_offset = Vector2(154, 154)
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Crosshair" type="TextureRect" parent="player/head/hud/2d_hud/CenterContainer"]
+layout_mode = 2
+texture = ExtResource("2_ak440")
 
 [node name="player_modules" type="Node" parent="player"]
 unique_name_in_owner = true
