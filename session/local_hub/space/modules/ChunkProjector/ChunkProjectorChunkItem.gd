@@ -73,11 +73,14 @@ func apply_intobject_changes():
 func apply_change_to_intobject(x, y, z, changes):
 	if changes == null:
 		intobject[x][y][z] = changes
-	elif typeof(changes) == TYPE_DICTIONARY:
-		merge_changes(x, y, z, changes)
-		update_obj_painter(x, y, z)
 	else:
-		printerr("Error: ChunkProjectorChunkItem.apply_change_to_intobject(): Invalid changes type.")
+		if typeof(changes) == TYPE_DICTIONARY:
+			merge_changes(x, y, z, changes)
+		update_obj_painter(x, y, z)
+	#else:
+		#printerr("Error: ChunkProjectorChunkItem.apply_change_to_intobject(): Invalid changes type.")
+		#print(changes)
+
 
 # Merge changes into intobject
 func merge_changes(x, y, z, changes):
