@@ -10,6 +10,9 @@ var chunk: Dictionary = {} # {start_point_chunk_pos: LinkProjectorChunkItem}
 var link_chunk_item = preload("res://session/local_hub/space/modules/LinkProjector/LinkProjectorChunkItem.tscn")
 
 
+func deferred_project(projection: Dictionary):
+	call_deferred("project", projection)
+
 # projection[start_point, end_point] -> link_id[start_point, end_point]
 # chunk[start_point_chunk_pos] = link_chunk_item
 # link_chunk_item.links[link_id] = link_observation_count
@@ -24,6 +27,7 @@ func project(projection: Dictionary):
 		if start_point_chunk == null:
 			chunk[start_point_chunk_pos] = link_chunk_item.instantiate() # Create start_point_chunk.
 			start_point_chunk = chunk[start_point_chunk_pos] # Update var, start_point_chunk.
+			#call_deferred("add_child", start_point_chunk)
 			add_child(start_point_chunk)
 		
 		# if projection[link_id] is null, this means that the link has been removed. This should be reflected.
@@ -44,6 +48,7 @@ func decrement_link_observation_count(link_id: Array):
 
 
 func free_chunk(chunk_pos: Vector3i):
+	#call_deferred("remove_child", chunk[chunk_pos])
 	remove_child(chunk[chunk_pos])
 	chunk.erase(chunk_pos)
 

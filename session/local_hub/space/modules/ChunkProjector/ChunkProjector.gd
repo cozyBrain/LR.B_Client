@@ -17,10 +17,14 @@ var chunks: Dictionary # {pos: chunk}
 var intobject_pre_allocation_tick_interval := 0.05 # in seconds
 
 var thread_project_changes := Thread.new()
+var thread_project_links := Thread.new()
 
 func _init():
 	# Safely set invisible_chunk_radius 
 	invisible_chunk_radius = visible_chunk_radius + 2
+
+func _process(delta):
+	print(Engine.get_frames_per_second())
 
 func _ready():
 	# Setup intobject_pool of ChunkProjectorChunkItem.
@@ -54,15 +58,22 @@ func handle(v: Dictionary):
 				if intobject_changes != null:
 					chunk.intobject_changes = intobject_changes
 					chunk.link_pointer_changes = chunk_update.get("link_pointer", {})
-					thread_project_changes.wait_to_finish()
+					if thread_project_changes.is_started():
+						thread_project_changes.wait_to_finish()
 					thread_project_changes.start(chunk.project_changes)
 				
 				var link_pointer_changes = chunk_update.get("link_pointer")
 				if link_pointer_changes != null:
 					link_projector.project(link_pointer_changes)
+					
+
 
 func _exit_tree():
-	thread_project_changes.wait_to_finish()
+	if thread_project_changes.is_started():
+		thread_project_changes.wait_to_finish()
+	if thread_project_links.is_started():
+		thread_project_links.wait_to_finish()
+
 
 func free_chunk(chunk_pos: Vector3i):
 	var chunk = chunks.get(chunk_pos) as ChunkProjectorChunkItem
@@ -89,7 +100,7 @@ func _on_chunks_detector_detected_exit(area):
 	detected_area.deactivate_collision()
 
 var max_visible_chunk_range := 64
-var visible_chunk_radius : int = 3 # unit: chunk.
+var visible_chunk_radius : int = 8 # unit: chunk.
 var invisible_chunk_radius : int: # must be bigger than visible_chunk_radius.
 	set(v):
 		invisible_chunk_radius = clampi(v, visible_chunk_radius + 1, v)

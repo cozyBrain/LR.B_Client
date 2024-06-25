@@ -24,7 +24,7 @@ func _on_chunk_unobserved(pos: Vector3i):
 	observing_chunks.erase(pos)
 
 
-func handle(v: Dictionary):   
+func handle(v: Dictionary): # Usually, receive from remote_hub.UnifiedChunkObserver._on_chunk_observed()
 	match StringName(v.get("Request")):
 		&"observe_chunk":
 			var chunks = v.get("observed_chunks")

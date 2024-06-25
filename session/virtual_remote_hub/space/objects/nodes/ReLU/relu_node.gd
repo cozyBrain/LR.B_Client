@@ -5,7 +5,7 @@ const id := &"ReLU"
 static var id_hashed: int = id.hash()
 
 
-const color := Color.GREEN * 2 #(brighter by multiplying color)
+const color := Color.WHITE * 2 #(brighter by multiplying color)
 const shape_id := &"box"
 
 
