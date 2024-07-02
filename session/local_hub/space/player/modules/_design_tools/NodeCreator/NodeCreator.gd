@@ -93,16 +93,23 @@ func _unhandled_input(event):
 					# Create node.
 					terminal.handle(
 						{
-							"Hub": 				terminal.virtual_remote_hub,
-							"ModuleContainer": 	"Player",
-							"Module": 			tool_name,
-							"Content": {
-								"Request": 		"create",
-								"TaskID":		task.get_instance_id(),
-								"id": 			node_selection.hash(),
-								"pos":			[pos.x, pos.y, pos.z]
+							c.HUB: 				terminal.virtual_remote_hub,
+							c.MODULE_CONTAINER: c.MCPLAYER,
+							c.MODULE: 			R_PlayerCommandHandler.module_name,
+							c.CONTENT: {
+								"Command": {
+									c.HUB: 				terminal.virtual_remote_hub,
+									c.MODULE_CONTAINER: c.MCPLAYER,
+									c.MODULE:			self.tool_name,
+									c.CONTENT: {
+										c.REQUEST: 		"create",
+										c.TASK_ID:		task.get_instance_id(),
+										"id": 			node_selection.hash(),
+										"pos":			[pos.x, pos.y, pos.z]
+									},
+								},
 							},
-						}
+						},
 					)
 				elif event.button_index == MOUSE_BUTTON_RIGHT:
 					# Create task to observe target_chunk.

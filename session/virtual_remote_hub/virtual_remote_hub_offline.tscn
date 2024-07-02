@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://bmuafmq7w5vma"]
+[gd_scene load_steps=14 format=3 uid="uid://bmuafmq7w5vma"]
 
 [ext_resource type="Script" path="res://session/virtual_remote_hub/virtual_remote_hub_offline.gd" id="1_xqj05"]
 [ext_resource type="Script" path="res://session/virtual_remote_hub/space/space.gd" id="2_06oiq"]
@@ -10,6 +10,7 @@
 [ext_resource type="Script" path="res://session/virtual_remote_hub/space/player/modules/NodeCreator.gd" id="8_kw6rx"]
 [ext_resource type="Script" path="res://session/virtual_remote_hub/space/player/modules/LinkCreator.gd" id="9_n1kd6"]
 [ext_resource type="Script" path="res://session/virtual_remote_hub/space/modules/Chunk.gd" id="10_2fufw"]
+[ext_resource type="Script" path="res://session/virtual_remote_hub/space/player/modules/CommandHandler.gd" id="10_4otho"]
 [ext_resource type="Script" path="res://session/virtual_remote_hub/space/modules/CommandManager/CommandManager.gd" id="11_udm7a"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_8c2hq"]
@@ -57,6 +58,9 @@ script = ExtResource("8_kw6rx")
 
 [node name="LinkCreator" type="Node" parent="space/offline_player/player_modules"]
 script = ExtResource("9_n1kd6")
+
+[node name="CommandHandler" type="Node" parent="space/offline_player/player_modules"]
+script = ExtResource("10_4otho")
 
 [node name="space_modules" type="Node" parent="space"]
 unique_name_in_owner = true
