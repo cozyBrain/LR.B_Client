@@ -4,12 +4,13 @@ extends Node
 
 const tool_name := &"LinkCreator"
 
-func handle(v : Dictionary):
-	var request := StringName(v.get("Request"))
+func handle(C : Dictionary):
+	C = C["Content"]
+	var request := StringName(C.get("Request"))
 	match request:
 		&"create":
-			var task_id = v["TaskID"]
-			var links_to_create = v["links"]
+			var task_id = C["TaskID"]
+			var links_to_create = C["links"]
 			# Create links...
 			print("Remote.LinkCreator: received links_to_create: ", links_to_create)
 			for link_data in links_to_create:

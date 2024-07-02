@@ -19,12 +19,11 @@ var intobject_pre_allocation_tick_interval := 0.05 # in seconds
 var thread_project_changes := Thread.new()
 var thread_project_links := Thread.new()
 
+
 func _init():
 	# Safely set invisible_chunk_radius 
 	invisible_chunk_radius = visible_chunk_radius + 2
 
-func _process(delta):
-	print(Engine.get_frames_per_second())
 
 func _ready():
 	# Setup intobject_pool of ChunkProjectorChunkItem.

@@ -105,14 +105,23 @@ func _unhandled_input(event):
 						}
 					)
 				elif event.button_index == MOUSE_BUTTON_RIGHT:
+					# Create task to observe target_chunk.
+					var task := PlayerUnifiedChunkObserver.observing_task.new()
+					# Register the task to clear the task later.
+					requested_tasks[task] = true
+					task.add_chunk_to_observe([chunk_pos_to_observe])
+					unified_chunk_observer.observe(task)
+					# Wait until the chunk is guaranteed to be accessible.
+					await task.done
 					# Remove node.
-					print(
+					terminal.handle(
 						{
 							"Hub": 				terminal.virtual_remote_hub,
 							"ModuleContainer": 	"Player",
 							"Module": 			tool_name,
 							"Content": {
 								"Request": 		"remove",
+								"TaskID":		task.get_instance_id(),
 								"pos": 			[pos.x, pos.y, pos.z],
 							},
 						}

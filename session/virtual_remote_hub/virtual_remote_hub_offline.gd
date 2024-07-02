@@ -32,10 +32,10 @@ func handle(data : Dictionary):
 	#module.handle(data["Content"])
 	if handler.is_started():
 		handler.wait_to_finish()
-	handler.start(h.bind(module, data["Content"]))
+	handler.start(h.bind(module, data))
 
-func h(module: Node, content):
-	module.call_thread_safe("handle", content)
+func h(module: Node, data):
+	module.call_thread_safe("handle", data)
 
 	## Create task to observe target_chunk.
 	#var task := PlayerUnifiedChunkObserver.observing_task.new()

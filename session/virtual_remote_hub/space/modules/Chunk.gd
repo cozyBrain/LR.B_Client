@@ -120,9 +120,10 @@ class ChunkItem:
 			# Setup intobject space and snapshot for the intobject.
 			_intobject = intobject_pool.borrow_res()
 			projection_snapshot[INTOBJECT] = intobject_pool.borrow_res()
-		# Let obj access to parent_chunk.
-		obj.parent_chunk = self
-		obj.queue_projection_update = queue_intobject_projection_update
+		if obj != null:
+			# Let obj access to parent_chunk.
+			obj.parent_chunk = self
+			obj.queue_projection_update = queue_intobject_projection_update
 		_intobject[pos.x][pos.y][pos.z] = obj
 		if not initial:
 			queue_intobject_projection_update()

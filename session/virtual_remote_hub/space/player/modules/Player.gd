@@ -13,8 +13,9 @@ var id := "offline_player"
 
 
 
-func handle(v : Dictionary):
-	match v.get("Request"):
+func handle(C : Dictionary):
+	C = C["Content"]
+	match C.get("Request"):
 		"exit_session":
 			print("handle_exit_session")
 			print("pausing module, chunk")

@@ -9,15 +9,16 @@ const module_name := &"PlayerMotionSync"
 @onready var player = %offline_player
 
 
-func handle(v : Dictionary):
+func handle(C : Dictionary):
+	C = C["Content"]
 	var head_rotation
-	match v.get("Request"):
+	match C.get("Request"):
 		"spawn":
 			print("request spawn received!")
 			# init chunk
 			space_module_chunk.init()
 			# load player
-			player_module_player.load_player(v.ID)
+			player_module_player.load_player(C.ID)
 			var position = player.position
 			head_rotation = %offline_player/head.rotation.x
 			var player_rotation = %offline_player.rotation.y
@@ -33,15 +34,15 @@ func handle(v : Dictionary):
 					}
 				}
 			)
-
+	
 	
 	# sync head_rotation
-	head_rotation = v.get("sync_head_rotation")
+	head_rotation = C.get("sync_head_rotation")
 	if head_rotation != null:
 		%offline_player/head.rotation.x = head_rotation[0]
 		%offline_player.rotation.y = head_rotation[1]
 	# sync pos
-	var pos = v.get("sync_position")
+	var pos = C.get("sync_position")
 	if pos != null:
 		player.position = Vector3(pos[0], pos[1], pos[2])
 		
