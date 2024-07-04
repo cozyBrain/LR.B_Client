@@ -2,14 +2,27 @@ extends Node
 
 const HUB = "Hub"
 const MODULE_CONTAINER = "ModuleContainer"
-const MCPLAYER = "Player"  # ModuleContainer.Player
-const MCSPACE = "Space"  # ModuleContainer.Space
+const MC_PLAYER = "Player"  # ModuleContainer.Player
+const MC_SPACE = "Space"  # ModuleContainer.Space
 const MODULE = "Module"
 
 const CONTENT = "Content"
 const REQUEST = "Request"
 const TASK_ID = "TaskID"
+const USER_ID = "UserID"
 
+const COMMAND = "Command"
+
+const RECORD = "Record"
+const ENQUEUE = "Enqueue"
+const DEQUEUE = "Dequeue"
+
+const UNDO = "Undo"
+const REDO = "Redo"
+
+const PRIORITY = "Priority"
+enum { IMMEDIATE, DEFERRED }
+enum { ADMIN }
 
 					#terminal.handle(
 						#{

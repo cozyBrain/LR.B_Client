@@ -94,12 +94,13 @@ func _unhandled_input(event):
 					terminal.handle(
 						{
 							c.HUB: 				terminal.virtual_remote_hub,
-							c.MODULE_CONTAINER: c.MCPLAYER,
+							c.MODULE_CONTAINER: c.MC_PLAYER,
 							c.MODULE: 			R_PlayerCommandHandler.module_name,
 							c.CONTENT: {
+								c.PRIORITY: c.IMMEDIATE,
 								"Command": {
 									c.HUB: 				terminal.virtual_remote_hub,
-									c.MODULE_CONTAINER: c.MCPLAYER,
+									c.MODULE_CONTAINER: c.MC_PLAYER,
 									c.MODULE:			self.tool_name,
 									c.CONTENT: {
 										c.REQUEST: 		"create",
@@ -132,5 +133,16 @@ func _unhandled_input(event):
 								"pos": 			[pos.x, pos.y, pos.z],
 							},
 						}
+					)
+				elif event.button_index == MOUSE_BUTTON_MIDDLE:
+					terminal.handle(
+						{
+							c.HUB: 				terminal.virtual_remote_hub,
+							c.MODULE_CONTAINER: c.MC_SPACE,
+							c.MODULE: 			R_SpaceCommandManager.module_name,
+							c.CONTENT: {
+								c.REQUEST: 		c.UNDO,
+							},
+						},
 					)
 

@@ -14,11 +14,13 @@ func handle(C : Dictionary):
 				space_module_chunk.queue_observe_or_unobserve(req[0], req[1], observer)
 		"command_observe":
 			var observer = C.get("observing_command")
-			var chunk_pos: Vector3i = C.get("pos")
+			var pos: Array = C.get("pos")
+			var chunk_pos := Vector3i(pos[0], pos[1], pos[2])
 			space_module_chunk.observe(chunk_pos, observer)
 		"command_unobserve":
 			var observer = C.get("observing_command")
-			var chunk_pos: Vector3i = C.get("pos")
+			var pos: Array = C.get("pos")
+			var chunk_pos := Vector3i(pos[0], pos[1], pos[2])
 			space_module_chunk.unobserve(chunk_pos, observer)
 
 #func _on_chunk_observed(chunk: R_SpaceChunk.ChunkItem):

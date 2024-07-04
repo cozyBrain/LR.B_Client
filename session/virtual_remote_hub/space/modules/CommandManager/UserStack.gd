@@ -19,7 +19,7 @@ func add_command(command: R_SpaceCommandManager.Command) -> void:
 # Perform undo
 func undo() -> R_SpaceCommandManager.Command:
 	if can_undo():
-		var command = undo_stack.remove_first()
+		var command = undo_stack.remove_last()
 		command.undo()
 		redo_stack.add(command)
 		return command
@@ -28,7 +28,7 @@ func undo() -> R_SpaceCommandManager.Command:
 # Perform redo
 func redo() -> R_SpaceCommandManager.Command:
 	if can_redo():
-		var command = redo_stack.remove_first()
+		var command = redo_stack.remove_last()
 		command.redo()
 		undo_stack.add(command)
 		return command

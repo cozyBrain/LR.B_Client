@@ -41,6 +41,21 @@ func remove_first() -> Object:
 		return node.value
 	return null
 
+## Remove and return the last element.
+func remove_last() -> Object:
+	if tail:
+		var node = tail
+		if tail.prev:
+			tail = tail.prev
+			tail.next = null
+		else:
+			head = null
+			tail = null
+		map.erase(node.value.id)
+		size -= 1
+		return node.value
+	return null
+
 ## Remove an element by ID.
 func remove_by_id(id: int) -> bool:
 	if map.has(id):

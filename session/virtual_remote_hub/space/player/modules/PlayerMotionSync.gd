@@ -7,6 +7,7 @@ const module_name := &"PlayerMotionSync"
 @onready var space_module_chunk := %space_modules/Chunk as R_SpaceChunk
 @onready var player_module_player := $"../Player"
 @onready var player = %offline_player
+@onready var command_manager = $"../../../space_modules/CommandManager" as R_SpaceCommandManager
 
 
 func handle(C : Dictionary):
@@ -34,6 +35,9 @@ func handle(C : Dictionary):
 					}
 				}
 			)
+			##TODO
+			# In the CommandManager, add a user for the newly spawned player.
+			command_manager.add_user(C.ID, c.ADMIN)
 	
 	
 	# sync head_rotation

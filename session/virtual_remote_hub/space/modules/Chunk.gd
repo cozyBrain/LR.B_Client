@@ -281,7 +281,7 @@ class ChunkItem:
 
 
 @onready var intobject_pre_allocation_tick := $intobject_pre_allocation_tick as Timer
-var intobject_pre_allocation_tick_interval := 0.05 # in seconds
+var intobject_pre_allocation_tick_interval := 0.05 # in seconds.
 
 class intobject_space_pool:
 	var intobject_space_sample: Array

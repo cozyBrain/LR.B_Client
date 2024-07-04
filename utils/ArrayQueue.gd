@@ -15,13 +15,19 @@ func enqueue(element) -> bool:
 	return false # Return false if the queue is full
 
 ## Remove the first n items from the queue and return them
-func dequeue(n: int = 1):
+func dequeue():
 	if queue.size() > 0:
-		var dequeue_size = min(n, queue.size())  # Ensure we don't dequeue more than available
-		var dequeued_items = queue.slice(0, dequeue_size)
-		queue = queue.slice(dequeue_size)
-		return dequeued_items
+		return queue.pop_front()
 	return null
+	
+### Remove the first n items from the queue and return them
+#func dequeue_multiple_items(n: int = 1):
+	#if queue.size() > 0:
+		#var dequeue_size = min(n, queue.size())  # Ensure we don't dequeue more than available
+		#var dequeued_items = queue.slice(0, dequeue_size)
+		#queue = queue.slice(dequeue_size)
+		#return dequeued_items
+	#return null
 
 ## Get the current size of the queue
 func get_pending_count() -> int:

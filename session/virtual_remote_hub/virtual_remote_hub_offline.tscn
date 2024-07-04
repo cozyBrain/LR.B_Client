@@ -62,6 +62,8 @@ script = ExtResource("9_n1kd6")
 [node name="CommandHandler" type="Node" parent="space/offline_player/player_modules"]
 script = ExtResource("10_4otho")
 
+[node name="command_handle_tick" type="Timer" parent="space/offline_player/player_modules/CommandHandler"]
+
 [node name="space_modules" type="Node" parent="space"]
 unique_name_in_owner = true
 
@@ -79,3 +81,5 @@ wait_time = 0.1
 
 [node name="CommandManager" type="Node" parent="space/space_modules"]
 script = ExtResource("11_udm7a")
+
+[node name="command_handle_tick" type="Timer" parent="space/space_modules/CommandManager"]

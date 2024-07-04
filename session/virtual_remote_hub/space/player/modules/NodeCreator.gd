@@ -33,11 +33,21 @@ func handle(D : Dictionary):
 			if D.get("CMR", true) == true:  # CommandManagerRecord
 				# Create command
 				var new_command = CreateNodeCommand.new(%offline_player.name, D)
-				#TODO: send the command to the CommandManager
+				terminal.handle(
+					{
+						c.HUB: 				terminal.virtual_remote_hub,
+						c.MODULE_CONTAINER: c.MC_SPACE,
+						c.MODULE: 			R_SpaceCommandManager.module_name,
+						c.CONTENT: {
+							c.REQUEST: 		c.RECORD,
+							c.COMMAND: 		new_command,
+						}
+					}
+				)
 				
 		
 		&"remove":
-			var task_id = C["TaskID"]
+			var task_id = C.get(c.TASK_ID)
 			var node_pos = C["pos"]
 			var pos = Vector3i(node_pos[0],node_pos[1],node_pos[2])
 			space_module_chunk.insert_intobject(pos, null)
